@@ -34,6 +34,8 @@ UPGRADE.txt
 /modules/acquia/jquery_ui/jquery.ui/jquery-1.2.6.js
 /modules/acquia/jquery_ui/jquery.ui/demos
 /modules/acquia/jquery_ui/jquery.ui/tests
+/modules/acquia/image
+/modules/acquia/img_assist
 
 # Copies of the GPL license.
 LICENSE.txt
