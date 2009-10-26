@@ -172,6 +172,6 @@ function kkblyd_order_order_form_validate($form, &$form_state) {
 /**
  * Submit handler for kkblyd_order_order_form().
  */
-function kkblyd_order_order_form_validate($form, &$form_state) {
+function kkblyd_order_order_form_submit($form, &$form_state) {
   // TODO: Compose and send email.
 }
