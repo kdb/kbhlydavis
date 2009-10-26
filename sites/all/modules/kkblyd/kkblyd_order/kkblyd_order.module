@@ -1,0 +1,144 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Implementation of Drupal core hooks.
+ *
+ */
+
+/**
+ * Implementation of hook_menu().
+ */
+function kkblyd_order_menu() {
+  $items = array();
+
+  $items['lydbog/%'] = array(
+    'title' => 'Lydbog',
+    'description' => '',
+    'page callback' => 'kkblyd_order_order_page',
+    'access arguments' => array('order kkblyd lydbog'),
+  );
+  return $items;
+}
+
+/**
+ * Callback function to display the ordering pages.
+ */
+function kkblyd_order_order_page() {
+  $output = drupal_get_form('kkblyd_order_order_form');
+  return $output;
+}
+
+/**
+ * Ordering form to display a list of soundbooks with their product types.
+ */
+function kkblyd_order_order_form() {
+  $form = array();
+  $term = arg(1);
+  $query = db_query("SELECT c.field_author_value, n.title, n.body, c.nid, p.field_product_value, p.delta FROM {content_type_lydbog} AS c
+                     JOIN {content_field_product} AS p ON p.nid = c.nid
+                     JOIN {node_revisions} AS n ON c.nid = n.nid
+                     JOIN {term_node} AS tn ON c.nid = tn.nid
+                     JOIN {term_data} AS t ON tn.tid = t.tid
+                     WHERE t.name = '%s'
+                     ORDER BY c.field_author_value;", $term);
+  while ($row = db_fetch_array($query)) {
+    if (!isset($form['lydbog'])) {
+      $form['lydbog'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Sound books'),
+        '#collapsible' => FALSE,
+      );
+    }
+    if (!isset($form['lydbog']['nid-'.$row['nid']])) {
+      $form['lydbog']['nid-'.$row['nid']] = array(
+        '#type' => 'fieldset',
+        '#title' => $row['field_author_value'] . ' - ' . $row['title'],
+        '#collapsible' => FALSE,
+      );
+      $form['lydbog']['nid-'.$row['nid']]['body'] = array(
+        '#value' => $row['body'],
+      );
+      
+    }
+    $form['lydbog']['nid-'.$row['nid']][$row['nid'].'-'.$row['delta']] = array(
+      '#type' => 'textfield',
+      '#title' => $row['field_product_value'],
+      '#size' => 2,
+    );
+  }
+  $form['contact'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Contact infomation'),
+    '#collapsible' => FALSE,
+  );
+  $form['contact']['mail-phone'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Email / phone'),
+    '#description' => t('Enter your phone number or email address'),
+    '#required' => TRUE,
+  );
+  $form['contact']['address'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Address'),
+    '#description' => t('Enter your address. You can also write comments to your order here.'),
+    '#required' => TRUE,
+  );
+  $form['contact']['ean'] = array(
+    '#type' => 'textfield',
+    '#title' => t('EAN'),
+    '#description' => t('Enter your EAN number'),
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Send order to KKB-LYD'),
+  );
+  return $form;
+}
+
+/**
+ * Validatation handler for kkblyd_order_order_form().
+ */
+function kkblyd_order_order_form_validate($form, &$form_state) {
+  $values = $form_state['values'];
+  // We loop through all the values and sort out the ones we don't want to look at.
+  foreach ($values as $key => $value) {
+    switch ($key) {
+      case 'form_id':
+        break;
+      case 'form_token':
+        break;
+      case 'form_build_id':
+        break;
+      case 'submit':
+        break;
+      case 'op':
+        break;
+      case 'ean':
+        // TODO: Validation for ean number.
+        break;
+      case 'mail-phone':
+        if (preg_match('/[\+\d]/', $value)) {
+          $value = str_replace(' ', '', $value);
+        }
+        if (preg_match('/^[+45][\d]{1,8}$|^[\d]{1,8}$/', $value)) {
+          $values['mail-phone'] = $value;
+        }
+        else if (preg_match('/^[a-z0-9_\+-]+(\.[a-z0-9_\+-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*\.([a-z]{2,4})$/', $value)) {
+          dpm("mail");
+          $values['mail-phone'] = $value;
+        }
+        else {
+          form_set_error($key, t("You must enter a valid phone number or email address"));
+        }
+        // Validation to check is phone number or email.
+        break;
+      default:
+        // Validation to check that value is an integer.
+        if (!empty($value) && preg_match('/[^\d]/', $value)) {
+          form_set_error($key, t('You must enter a whole number'));
+        }
+    }
+  }
+}
