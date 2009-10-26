@@ -63,12 +63,15 @@ function kkblyd_order_order_page() {
 function kkblyd_order_order_form() {
   $form = array();
   $term = arg(1);
-  $query = db_query("SELECT c.field_author_value, n.title, n.body, c.nid, p.field_product_value, p.delta FROM {content_type_lydbog} AS c
+  $query = db_query("SELECT c.field_author_value, nr.title, nr.body, c.nid, p.field_product_value, p.delta
+                     FROM {content_type_lydbog} AS c
                      JOIN {content_field_product} AS p ON p.nid = c.nid
-                     JOIN {node_revisions} AS n ON c.nid = n.nid
+                     JOIN {node} AS n on c.nid = n.nid
+                     JOIN {node_revisions} AS nr ON c.nid = nr.nid
                      JOIN {term_node} AS tn ON c.nid = tn.nid
                      JOIN {term_data} AS t ON tn.tid = t.tid
                      WHERE t.name = '%s'
+                     AND n.type = 'lydbog'
                      ORDER BY c.field_author_value;", $term);
   while ($row = db_fetch_array($query)) {
     if (!isset($form['lydbog'])) {
