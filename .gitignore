@@ -52,3 +52,5 @@ CVS
 # Patch files
 *.patch
 
+# The devel module on local developments
+sites/all/modules/contrib/devel
