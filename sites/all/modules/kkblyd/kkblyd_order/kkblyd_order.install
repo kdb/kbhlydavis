@@ -1,0 +1,42 @@
+<?php // $Id$
+/**
+ * @file
+ * Create the schema used to store extra info on terms used for katalogs.
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function kkblyd_order_install() {
+  drupal_install_schema('kkblyd_order');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function kkblyd_order_uninstall() {
+  drupal_uninstall_schema('kkblyd_order');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function kkblyd_order_schema() {  
+  $schema['kkblyd_order'] = array(
+    'fields' => array(
+      'tid' => array(
+        'type' => 'int', 
+        'unsigned' => TRUE, 
+        'not null' => TRUE, 
+        'description' => 'term_data.tid for term',
+      ),
+      'slug' => array(
+        'type' => 'varchar',
+        'length' => 100,
+        'description' => 'slug for terms.',
+      ),
+    ),
+    'primary key' => array('tid'),
+  );
+  return $schema;
+}

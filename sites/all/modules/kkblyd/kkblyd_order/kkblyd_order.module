@@ -14,6 +14,58 @@ function kkblyd_order_perm() {
   return array('administer lydbog order');
 }
 
+/**
+ * Implementation of hook_form_alter().
+ */
+function kkblyd_order_form_taxonomy_form_term_alter(&$form, $form_state) {
+  if ($form['#vocabulary']['vid'] == 1) {
+    $form['identification']['slug'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Slug'),
+      '#description' => t('Enter the slug for the url used in the catalog'),
+      '#size' => 40,
+      '#maxlength' => 255,
+      '#required' => TRUE,
+    );
+    if ($form['tid']['#value']) {
+      $form['identification']['slug']['#default_value'] = db_result(
+        db_query("SELECT slug FROM {kkblyd_order} WHERE tid = %d", $form['tid']['#value']));
+    }
+    if (isset($form['delete']['#value']) && $form['delete']['#value'] == 1) {
+      unset($form['identification']['slug']);
+    }
+    $form['identification']['description']['#weight'] = 1;
+    $form['#validate'][] = 'kkblyd_order_taxonomy_validate';
+  }
+}
+
+function kkblyd_order_taxonomy_validate($form, $form_state) {
+  if (preg_match('/[^a-zA-Z\-_]/', $form_state['values']['slug'])) {
+    form_set_error('slug', t("Only letters dashes (-) and underscores (_) allowed"));
+  }
+}
+
+/**
+ * Implementation of hook_taxonomy().
+ */
+function kkblyd_order_taxonomy($op, $type, $values) {
+  if ($type == 'term') {
+    switch ($op) {
+      case 'insert':
+        $tid = db_result(db_query("SELECT tid FROM {term_data} WHERE name = '%s' LIMIT 1", $values['name']));
+        $values['tid'] = $tid;
+        drupal_write_record('kkblyd_order', $values);
+        break;
+      case 'update':
+        drupal_write_record('kkblyd_order', $values, 'tid');
+        break;
+      case 'delete':
+        db_query('DELETE FROM {kkblyd_order} WHERE tid = %d', $values['tid']);
+        break;
+    }
+  }
+}
+
 
 /**
  * Implementation of hook_menu().
@@ -70,7 +122,8 @@ function kkblyd_order_order_form() {
                      JOIN {node_revisions} AS nr ON c.nid = nr.nid
                      JOIN {term_node} AS tn ON c.nid = tn.nid
                      JOIN {term_data} AS t ON tn.tid = t.tid
-                     WHERE t.name = '%s'
+                     JOIN {kkblyd_order} AS k ON tn.tid = k.tid
+                     WHERE k.slug = '%s'
                      AND n.type = 'lydbog'
                      ORDER BY c.field_author_value;", $term);
   while ($row = db_fetch_array($query)) {
