@@ -73,7 +73,7 @@ function kkblyd_order_taxonomy($op, $type, $values) {
 function kkblyd_order_menu() {
   $items = array();
 
-  $items['lydbog/%'] = array(
+  $items['katalog/%'] = array(
     'title' => 'Lydbog',
     'description' => '',
     'page callback' => 'kkblyd_order_order_page',
@@ -97,6 +97,12 @@ function kkblyd_order_menu() {
     'page arguments' => array('kkblyd_order_admin_lydbog_form'),
     'access arguments' => array('administer lydbog order'),
     'file' => 'kkblyd_order.admin.inc',
+  );
+
+  $items['katalog'] = array(
+    'title' => 'Katalog',
+    'page callback' => 'kkblyd_order_katalog_page',
+    'access arguments' => array('access content'),
   );
   return $items;
 }
@@ -230,4 +236,38 @@ function kkblyd_order_order_form_validate($form, &$form_state) {
  */
 function kkblyd_order_order_form_submit($form, &$form_state) {
   // TODO: Compose and send email.
+}
+
+function kkblyd_order_katalog_page() {
+  $sql = "SELECT name, description, slug
+          FROM {term_data} AS t
+          JOIN {kkblyd_order} AS k ON t.tid = k.tid
+          WHERE vid = 1;";
+  $result = db_query($sql);
+  $markup = '';
+  while ($row = db_fetch_array($result)) {
+    $link = l($row['name'], 'katalog/' . $row['slug']);
+    $markup .= theme('kkblyd_order_katalog', $link, $row['description']);
+  }
+  return $markup;
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function kkblyd_order_theme() {
+  $items = array();
+  $items['kkblyd_order_katalog'] = array(
+    'arguments' => array('link' => NULL, 'description' => NULL),
+  );
+  return $items;
+}
+
+function theme_kkblyd_order_katalog($link, $description) {
+  $result = '';
+  $result .= '<div class="container">';
+  $result .= '<h2 class="title">'.$link.'</h2>';
+  $result .= '<p class="description">'.check_plain($description).'</p>';
+  $result .= '</div>';
+  return $result;
 }
