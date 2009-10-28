@@ -55,6 +55,15 @@ function kkblyd_order_menu() {
 }
 
 /**
+ * Implementation of hook_mail().
+ */
+function kkblyd_order_mail($key, &$message, $params) {
+  $message['headers'] = array_merge($message['headers'], $params['headers']);
+  $message['subject'] = $params['subject'];
+  $message['body'][] = $params['message'];
+}
+
+/**
  * Callback function to display the ordering pages.
  */
 function kkblyd_order_order_page() {
@@ -174,7 +183,37 @@ function kkblyd_order_order_form_validate($form, &$form_state) {
  * Submit handler for kkblyd_order_order_form().
  */
 function kkblyd_order_order_form_submit($form, &$form_state) {
-  // TODO: Compose and send email.
+  global $user;
+  $values = $form_state['values'];
+  $products = array();
+  foreach ($values['lydbog'] as $nid => $array) {
+    foreach ($array as $delta => $value) {
+      // Validation to check that value is an integer.
+      if (!empty($value)) {
+        $products[] = array(
+          'info' => $form['lydbog'][$nid]['#title'],
+          'product' => $form['lydbog'][$nid][$delta]['#title'],
+          'amount' => $value
+        );
+      }
+    }
+  }
+  $message = theme('kkblyd_order_mail', $values, $products);
+  $subject = t("Order from @site", array('@site' => variable_get('site_name', "KKB-LYD")));
+  $headers = array('X-Mailer' => 'Drupal (PHP/'. phpversion() .')');
+  $from = '"KKB Lyd order" <order@kbhlydavis.dk>';
+  $address = variable_get('kkblyd_order_lydbog_send_mail', '');
+  if (!empty($address)) {
+    drupal_mail(
+      'kkblyd_order',
+      'order',
+      $address,
+      user_preferred_language($user),
+      array('message' => $message, 'subject' => $subject, 'headers' => $headers),
+      $from
+    );
+    drupal_set_message("Your order has been sent and you will be contacted shortly.");
+  }
 }
 
 function kkblyd_order_katalog_page() {
@@ -197,6 +236,10 @@ function kkblyd_order_theme() {
   $items = array();
   $items['kkblyd_order_katalog'] = array(
     'arguments' => array('link' => NULL, 'description' => NULL),
+  );
+  $items['kkblyd_order_mail'] = array(
+    'arguments' => array('form_values' => NULL, 'products' => NULL),
+    'template' => 'kkblyd_order-mail',
   );
   return $items;
 }
