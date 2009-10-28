@@ -1,0 +1,20 @@
+; $Id$
+
+
+name = Lyden
+description = Simple theme made for Københavns Lydavis, made with Zen theme for Drupal.
+core = 6.x
+engine = phptemplate
+
+stylesheets[all][]   = css/reset.css
+stylesheets[all][]   = css/fonts.css
+stylesheets[screen][]   = css/layout.css
+; scripts[] = script.js
+
+regions[navbar]         = navigation bar
+regions[header]         = header
+regions[footer]         = footer
+
+features[] = favicon
+features[] = primary_links
+
