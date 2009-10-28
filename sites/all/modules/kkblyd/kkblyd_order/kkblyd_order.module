@@ -84,20 +84,21 @@ function kkblyd_order_order_form() {
         '#type' => 'fieldset',
         '#title' => t('Sound books'),
         '#collapsible' => FALSE,
+        '#tree' => TRUE,
       );
     }
-    if (!isset($form['lydbog']['nid-'.$row['nid']])) {
-      $form['lydbog']['nid-'.$row['nid']] = array(
+    if (!isset($form['lydbog'][$row['nid']])) {
+      $form['lydbog'][$row['nid']] = array(
         '#type' => 'fieldset',
         '#title' => $row['field_author_value'] . ' - ' . $row['title'],
         '#collapsible' => FALSE,
       );
-      $form['lydbog']['nid-'.$row['nid']]['body'] = array(
+      $form['lydbog'][$row['nid']]['body'] = array(
         '#value' => $row['body'],
       );
       
     }
-    $form['lydbog']['nid-'.$row['nid']][$row['nid'].'-'.$row['delta']] = array(
+    $form['lydbog'][$row['nid']][$row['delta']] = array(
       '#type' => 'textfield',
       '#title' => $row['field_product_value'],
       '#size' => 2,
@@ -137,43 +138,35 @@ function kkblyd_order_order_form() {
  */
 function kkblyd_order_order_form_validate($form, &$form_state) {
   $values = $form_state['values'];
-  // We loop through all the values and sort out the ones we don't want to look at.
-  foreach ($values as $key => $value) {
-    switch ($key) {
-      case 'form_id':
-        break;
-      case 'form_token':
-        break;
-      case 'form_build_id':
-        break;
-      case 'submit':
-        break;
-      case 'op':
-        break;
-      case 'ean':
-        // TODO: Validation for ean number.
-        break;
-      case 'mail-phone':
-        if (preg_match('/[\+\d]/', $value)) {
-          $value = str_replace(' ', '', $value);
-        }
-        if (preg_match('/^[+45][\d]{1,8}$|^[\d]{1,8}$/', $value)) {
-          $values['mail-phone'] = $value;
-        }
-        else if (preg_match('/^[a-z0-9_\+-]+(\.[a-z0-9_\+-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*\.([a-z]{2,4})$/', $value)) {
-          $values['mail-phone'] = $value;
-        }
-        else {
-          form_set_error($key, t("You must enter a valid phone number or email address"));
-        }
-        // Validation to check is phone number or email.
-        break;
-      default:
-        // Validation to check that value is an integer.
-        if (!empty($value) && preg_match('/[^\d]/', $value)) {
-          form_set_error($key, t('You must enter a whole number'));
-        }
+  $values['mail-phone'] = $pm;
+  // Validation to check is phone number or email.
+  if (preg_match('/[\+\d]/', $pm)) {
+    $value = str_replace(' ', '', $pm);
+  }
+  if (preg_match('/^[+45][\d]{1,8}$|^[\d]{1,8}$/', $pm)) {
+    $values['mail-phone'] = $pm;
+  }
+  else if (preg_match('/^[a-z0-9_\+-]+(\.[a-z0-9_\+-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*\.([a-z]{2,4})$/', $pm)) {
+    $values['mail-phone'] = $pm;
+  }
+  else {
+    form_set_error($key, t("You must enter a valid phone number or email address"));
+  }
+
+  // We loop through all book values.
+  foreach ($values['lydbog'] as $nids) {
+    foreach ($nids as $key => $value) {
+      // Validation to check that value is an integer.
+      if (!empty($value) && preg_match('/[^\d]/', $value)) {
+        form_set_error($key, t('You must enter a whole number'));
+      }
+      if (!empty($value)) {
+        $has_value = TRUE;
+      }
     }
+  }
+  if (!$has_value) {
+    form_set_error('lydbog', t("You must enter an amount for one of the products to make an order")) ;
   }
 }
 
