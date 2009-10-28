@@ -75,8 +75,7 @@ function kkblyd_order_order_form() {
                      JOIN {node_revisions} AS nr ON c.nid = nr.nid
                      JOIN {term_node} AS tn ON c.nid = tn.nid
                      JOIN {term_data} AS t ON tn.tid = t.tid
-                     JOIN {kkblyd_order} AS k ON tn.tid = k.tid
-                     WHERE k.slug = '%s'
+                     WHERE tn.tid = %d
                      AND n.type = 'lydbog'
                      ORDER BY c.field_author_value;", $term);
   while ($row = db_fetch_array($query)) {
