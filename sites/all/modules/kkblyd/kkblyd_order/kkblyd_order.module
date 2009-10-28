@@ -51,6 +51,12 @@ function kkblyd_order_menu() {
     'page callback' => 'kkblyd_order_katalog_page',
     'access arguments' => array('access content'),
   );
+  $items['katalog/bestil'] = array(
+    'title' => t('Order sound news'),
+    'page callback' => 'kkblyd_order_lydavis_page',
+    'access arguments' => array('access content'),
+  );
+
   return $items;
 }
 
@@ -241,6 +247,10 @@ function kkblyd_order_theme() {
     'arguments' => array('form_values' => NULL, 'products' => NULL),
     'template' => 'kkblyd_order-mail',
   );
+  $items['kkblyd_order_sound_mail'] = array(
+    'arguments' => array('form_values' => NULL, 'products' => NULL),
+    'template' => 'kkblyd_order-sound-mail',
+  );
   return $items;
 }
 
@@ -251,4 +261,138 @@ function theme_kkblyd_order_katalog($link, $description) {
   $result .= '<p class="description">'.check_plain($description).'</p>';
   $result .= '</div>';
   return $result;
+}
+
+function kkblyd_order_lydavis_page() {
+  $output = '';
+  $output .= drupal_get_form('kkblyd_order_lydavis_form');
+  return $output;
+}
+
+function kkblyd_order_lydavis_form() {
+  $form = array();
+  $form['area'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('City area'),
+    '#tree' => TRUE,
+  );
+  $sql = "SELECT name, tid FROM {term_data}
+          WHERE vid = 2;";
+  $result = db_query($sql);
+  while ($row = db_fetch_array($result)) {
+    $form['area'][$row['tid']] = array(
+      '#type' => 'fieldset',
+      '#title' => t(check_plain($row['name'])),
+      '#description' => t('Select what type of material you want to recieve from this area'),
+      '#collapsible' => TRUE,
+    );
+    $form['area'][$row['tid']]['tape'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Tape'),
+      '#default_value' => 0,
+    );
+    $form['area'][$row['tid']]['cd'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Cd'),
+      '#default_value' => 0,
+    );
+  }
+  $form['info'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Name and address'),
+    '#required' => TRUE,
+    '#cols' => 40,
+    '#rows' => 5,
+  );
+  $form['mail-phone'] = array(
+    '#type' => 'textfield',
+    '#title' => t('E-mail / phone'),
+    '#description' => t('Enter your phone number or email address'),
+    '#size' => 40,
+    '#required' => TRUE,
+  );
+  $form['member'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Member'),
+    '#description' => t('Check if you are you member of Danish blind community'),
+    '#default_value' => 0,
+  );
+  $form['comment'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Comment'),
+    '#description' => t('Optional enter a comment or message along with your request.'),
+    '#size' => 40,
+    '#rows' => 5,
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Send request'),
+  );
+  return $form;
+}
+
+/**
+ * Validate handler for kkblyd_order_lydavis_form.
+ */
+function kkblyd_order_lydavis_form_validate($form, &$form_state) {
+  $values = $form_state['values'];
+  $values['mail-phone'] = $pm;
+  // Validation to check is phone number or email.
+  if (preg_match('/[\+\d]/', $pm)) {
+    $value = str_replace(' ', '', $pm);
+  }
+  if (preg_match('/^[+45][\d]{1,8}$|^[\d]{1,8}$/', $pm)) {
+    $values['mail-phone'] = $pm;
+  }
+  else if (preg_match('/^[a-z0-9_\+-]+(\.[a-z0-9_\+-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*\.([a-z]{2,4})$/', $pm)) {
+    $values['mail-phone'] = $pm;
+  }
+  else {
+    form_set_error($key, t("You must enter a valid phone number or email address"));
+  }
+  foreach ($values['area'] as $area) {
+    if ($area['tape'] || $area ['cd']) {
+      $accept = TRUE;
+      break;
+    }
+  }
+  if (!$accept) {
+    form_set_error('area', t('You must select at least 1 tape or cd to recieve'));
+  }
+}
+
+function kkblyd_order_lydavis_form_submit($form, &$form_state) {
+  global $user;
+  $values = $form_state['values'];
+  $products = array();
+  foreach ($values['area'] as $tid => $area) {
+    if ($area['tape']) {
+      $products[] = array(
+        'type' => t('Tape'),
+        'term' => taxonomy_get_term($tid),
+      );
+    }
+    if ($area['cd']) {
+      $products[] = array(
+        'type' => t('CD'),
+        'term' => taxonomy_get_term($tid),
+      );
+    }
+  }
+  $message = theme('kkblyd_order_sound_mail', $values, $products);
+  $subject = t("Subscription to sound news from @site", array('@site' => variable_get('site_name', "KKB-LYD")));
+  $headers = array('X-Mailer' => 'Drupal (PHP/'. phpversion() .')');
+  $from = '"KKB Lyd subscription" <subscription@kbhlydavis.dk>';
+  $address = variable_get('kkblyd_order_subscription_send_mail', '');
+  if (!empty($address)) {
+    drupal_mail(
+      'kkblyd_order',
+      'order',
+      $address,
+      user_preferred_language($user),
+      array('message' => $message, 'subject' => $subject, 'headers' => $headers),
+      $from
+    );
+    drupal_set_message("Your subscription has been sent and you will be contacted shortly.");
+  }
 }
