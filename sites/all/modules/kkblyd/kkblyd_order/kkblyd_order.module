@@ -51,7 +51,7 @@ function kkblyd_order_menu() {
     'page callback' => 'kkblyd_order_katalog_page',
     'access arguments' => array('access content'),
   );
-  $items['katalog/bestil'] = array(
+  $items['bestil'] = array(
     'title' => t('Order sound news'),
     'page callback' => 'kkblyd_order_lydavis_page',
     'access arguments' => array('access content'),
