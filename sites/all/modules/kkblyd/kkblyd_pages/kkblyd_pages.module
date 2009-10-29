@@ -44,6 +44,7 @@ function kkblyd_pages_menu() {
 }
 
 function kkblyd_pages_table() {
+  drupal_add_js(drupal_get_path('module', 'kkblyd_pages') . '/form.js');
   if (date('H') > 11) {
     $date = date('Y-m-d');
   }
@@ -102,7 +103,7 @@ function kkblud_pages_get_table_form_submit($form, &$form_state) {
 
 function theme_kkblud_pages_get_table_form($form) {
   $output = '';
-  $header = array('', '', '');
+  $header = array();
   $rows = array();
   foreach ($form['article_data']['#value'] as $nid => $item) {
     foreach ($form['article_data']['#value'][$nid]['terms'] as $term) {
