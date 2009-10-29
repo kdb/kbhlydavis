@@ -1,0 +1,168 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * This is the file description for Kkblyd Pages module.
+ *
+ * In this more verbose, multi-line description, you can specify what this
+ * file does exactly. Make sure to wrap your documentation in column 78 so
+ * that the file can be displayed nicely in default-sized consoles.
+ */
+
+/**
+ * Implementaion of hook_theme().
+ */
+function kkblyd_pages_theme() {
+  $items = array();
+  $items['kkblud_pages_get_table_form'] = array(
+    'arguments' => array('form' => NULL),
+  );
+  $items['kkblud_pages_table_render_article'] = array(
+    'arguments' => array('values' => NULL),
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function kkblyd_pages_menu() {
+  $items = array();
+
+  $items['forside'] = array(
+    'title' => t('Frontpage'),
+    'page callback' => 'kkblyd_pages_table',
+    'access arguments' => array('access content'),
+  );
+  $items['playlist/%'] = array(
+    'title' => t('Get Playlist'),
+    'page callback' => 'kkblyd_pages_make_playlist',
+    'access arguments' => array('access content'),
+  );
+  return $items;
+}
+
+function kkblyd_pages_table() {
+  if (date('H') > 11) {
+    $date = date('Y-m-d');
+  }
+  else {
+    $date = date('Y-m-d', time()-86400);
+  }
+  return drupal_get_form('kkblud_pages_get_table_form', $date);
+}
+
+function kkblud_pages_get_table_form(&$form_state, $date) {
+  $form = array();
+  $form['article'] = array(
+    '#tree' => TRUE
+  );
+
+  $form['article_data'] = array(
+    '#type' => 'value',
+    '#value' => array(),
+  );
+
+  $result = db_query("SELECT n.title, n.nid, n.vid, c.field_sound_article_data, f.filesize, f.filepath, f.fid FROM {node} AS n
+                      JOIN {content_type_sound_article} AS c ON c.nid = n.nid
+                      JOIN {files} AS f ON f.fid = c.field_sound_article_fid
+                      WHERE c.field_publish_date_value = '%s';", $date . 'T00:00:00');
+  while ($row = db_fetch_array($result)) {
+    $node = new stdClass;
+    $node->nid = $row['nid'];
+    $node->vid = $row['vid'];
+    $form['article'][$row['nid']] = array(
+      '#type' => 'checkbox'
+    );
+    $file_data = unserialize($row['field_sound_article_data']);
+    $form['article_data']['#value'][$row['nid']] = array(
+      'terms' => taxonomy_node_get_terms($node),
+      'title' => $row['title'],
+      'duration' => preg_replace('/^0/', '', date('i:s', (int) $file_data['duration'])),
+      'size' => number_format($row['filesize'] / 1000000, 2, ',', '.') . ' MB',
+      'listen' => url($row['filepath'], array('absolute' => TRUE)),
+      'download' => url('playlist/' . $row['fid'], array('absolute' => TRUE)),
+    );
+  }
+  $form['download'] = array(
+    '#type' => 'submit',
+    '#value' => t('Download'),
+    '#attributes' => array('class' => 'download'),
+  );
+  
+  
+  return $form;
+}
+
+function kkblud_pages_get_table_form_submit($form, &$form_state) {
+  $checked = array_keys(array_filter($form_state['values']['article']));
+  drupal_goto('playlist/' . join('-', $checked));
+}
+
+function theme_kkblud_pages_get_table_form($form) {
+  $output = '';
+  $header = array('', '', '');
+  $rows = array();
+  foreach ($form['article_data']['#value'] as $nid => $item) {
+    foreach ($form['article_data']['#value'][$nid]['terms'] as $term) {
+      if ($term->vid == 3) {
+        $class = substr($term->name, 0, 3);
+      }
+    }
+    if (!$class) {
+      $class = 'non';
+    }
+    $rows[] = array(
+      'data' => array(
+        drupal_render($form['article'][$nid]),
+        theme('kkblud_pages_table_render_article', $form['article_data']['#value'][$nid]),
+        l(t('Listen'), $form['article_data']['#value'][$nid]['listen'], array('attributes' => array('class' => 'listen'))),
+        l(t('Download'), $form['article_data']['#value'][$nid]['download'], array('attributes' => array('class' => 'download')))
+      ),
+      'class' => $class,
+    );
+  }
+
+  $output .= theme('table', $header, $rows);
+  $output .= drupal_render($form);
+  return $output;
+}
+
+function theme_kkblud_pages_table_render_article($values) {
+  $output = '<div>';
+  $output .= '<p class="title">' . check_plain($values['title']) . '</p>';
+  $output .= '<span class="info">' . $values['duration'] . ' ' . $values['size'] . '</span>';
+  $terms = array();
+  foreach ($values['terms'] as $term) {
+    if ($term->vid != 3) {
+      $terms[] = l($term->name, taxonomy_term_path($term));
+    }
+  }
+  $output .= theme('item_list', $terms, NULL, 'ul', array('class' => 'terms'));
+  $output .= '</div>';
+  return $output;
+}
+
+/**
+ * Function to make a playlist.m3u that users can download
+ */
+function kkblyd_pages_make_playlist() {
+  $nid = explode('-', arg(1));
+  $lookup = '(' . join(',', $nid) . ')';
+  $result = db_query("SELECT filepath FROM {files} AS f
+                      JOIN {content_type_sound_article} AS c ON c.field_sound_article_fid = f.fid
+                      WHERE c.nid IN %s", $lookup);
+  $path = '';
+  while ($row = db_result($result)) {
+    $path .= url($row, array('absolute' => TRUE)) . PHP_EOL;
+  }
+  if (!empty($path)) {
+  drupal_set_header('Content-Type: audio/x-mpegurl; charset=utf-8');
+  drupal_set_header('Content-Disposition: attachment; filename="playlist.m3u"');
+    echo $path;
+  }
+  else {
+    drupal_goto('<front>');
+  }
+}
