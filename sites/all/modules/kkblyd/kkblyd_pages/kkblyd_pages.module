@@ -35,6 +35,13 @@ function kkblyd_pages_menu() {
     'page callback' => 'kkblyd_pages_table',
     'access arguments' => array('access content'),
   );
+
+  $items['lydavis/%'] = array(
+    'title' => t('Lydavis'),
+    'page callback' => 'kkblyd_pages_weekly_table',
+    'access arguments' => array('access content'),
+  );
+
   $items['playlist/%'] = array(
     'title' => t('Get Playlist'),
     'page callback' => 'kkblyd_pages_make_playlist',
@@ -52,6 +59,31 @@ function kkblyd_pages_table() {
     $date = date('Y-m-d', time()-86400);
   }
   return drupal_get_form('kkblud_pages_get_table_form', $date);
+}
+
+function kkblyd_pages_weekly_table() {
+  $date = arg(1);
+  $choices = array('mandag', 'tirdag', 'onsdag', 'torsdag', 'fredag');
+  if (!in_array($date, $choices)) {
+    return drupal_not_found();
+  }
+  $transform = array(
+    'mandag' => 1,
+    'tirsdag' => 2,
+    'onsdag' => 3,
+    'torsdag' => 4,
+    'fredag' => 5
+  );
+  $week_day = $transform[$date];
+  $today = date('N');
+  $lookup = array(NULL, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6);
+  $selected_date = date('Y-m-d', time()-($lookup[7 + $today - $week_day]) * 86400);
+  if ((date('H') < 12) && ($today == $week_day)) {
+    dpm('test');
+    $selected_date = date('Y-m-d', time() - 7 * 86400);
+  }
+  drupal_add_js(drupal_get_path('module', 'kkblyd_pages') . '/form.js');
+  return drupal_get_form('kkblud_pages_get_table_form', $selected_date);
 }
 
 function kkblud_pages_get_table_form(&$form_state, $date) {
