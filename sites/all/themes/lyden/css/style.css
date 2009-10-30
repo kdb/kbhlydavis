@@ -122,3 +122,58 @@ div.title-wrapper {
   color: #4c9201;
   padding-left: 125px;
 }
+
+/** Catalog list page **/
+.view-id-catalog {
+  background-color: white;
+}
+
+.view-id-catalog a {
+  font-size: 24px;
+  color: #4c9201;
+  font-weight: bold;
+}
+.view-id-catalog .views-field-title {
+  padding: 20px;
+  width: 500px;
+  float: left;
+}
+
+.view-id-catalog .views-field-body {
+  padding: 0 0 20px 30px;
+  width: 500px;
+  float: left;
+}
+
+.view-id-catalog .views-field-field-catalog-image-fid {
+  float: left;
+  padding-left: 20px;
+}
+
+.views-row {
+  padding: 10px 0;
+  border-bottom: 10px solid #ccd5dc;
+}
+
+
+/** clear-fix for views-row **/
+.views-row:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+.views-row {
+  display: inline-block;
+}
+
+/* Hides from IE-mac \*/
+* html .views-row {
+  height: 1%;
+}
+.views-row {
+  display: block;
+}
+/* End hide from IE-mac */
