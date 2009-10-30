@@ -27,6 +27,9 @@ function kkblyd_pages_theme() {
   $items['kkblyd_pages_todays_block'] = array(
     'arguments' => array(),
   );
+  $items['kkblyd_pages_area_block'] = array(
+    'arguments' => array(),
+  );
   return $items;
 }
 
@@ -42,13 +45,11 @@ function kkblyd_pages_menu() {
   );
 
   $items['lydavis/%'] = array(
-    'title' => t('Lydavis'),
     'page callback' => 'kkblyd_pages_weekly_table',
     'access arguments' => array('access content'),
   );
 
   $items['lydavis'] = array(
-    'title' => t('Lydavis'),
     'page callback' => 'kkblyd_pages_lydavis',
     'access arguments' => array('access content'),
   );
@@ -136,7 +137,11 @@ function kkblyd_pages_weekly_area_table($tid) {
     return drupal_not_found();
   }
   drupal_add_js(drupal_get_path('module', 'kkblyd_pages') . '/form.js');
-  return drupal_get_form('kkblud_pages_get_table_form', $term);
+  $output = '<div class="area-page-wrapper">';
+  $output .= theme('kkblud_pages_render_title_header', $term->name . ':', t("Single articles"));
+  $output .= drupal_get_form('kkblud_pages_get_table_form', $term);
+  $output .= '</div>';
+  return $output;
 }
 
 /**
@@ -167,7 +172,7 @@ function kkblud_pages_get_table_form(&$form_state, $arg) {
       'duration' => preg_replace('/^0/', '', date('i:s', (int) $file_data['duration'])),
       'size' => number_format($row['filesize'] / 1000000, 2, ',', '.') . ' MB',
       'listen' => url($row['filepath'], array('absolute' => TRUE)),
-      'download' => url('playlist/' . $row['fid'], array('absolute' => TRUE)),
+      'download' => url('playlist/' . $row['nid'], array('absolute' => TRUE)),
     );
   }
   $form['download'] = array(
@@ -251,6 +256,16 @@ function kkblyd_pages_make_playlist() {
     $result = db_query("SELECT filepath FROM {files} AS f
                         JOIN {content_type_sound_article} AS c ON c.field_sound_article_fid = f.fid
                         WHERE c.field_publish_date_value = '$date'");
+  }
+  else if ($arg == 'omrade') {
+    $term = taxonomy_get_term(arg(2));
+    if (!$term) {
+      return drupal_not_found();
+    }
+    $result = db_query("SELECT filepath FROM {files} AS f
+                        JOIN {content_type_sound_article} AS c ON c.field_sound_article_fid = f.fid
+                        JOIN {term_node} AS t ON t.nid = c.nid
+                        WHERE t.tid = %d", $term->tid);
   }
   else {
     if (preg_match('/[^0-9\-]/', $arg)) {
@@ -349,23 +364,33 @@ function kkblyd_pages_block($op = 'list', $delta = 0, $edit = array()) {
 
     case 'list':
       $blocks[0]['info'] = t('Kkblyd_pages todays articles');
+       $blocks[1]['info'] = t('Kkblyd_pages area articles');
       return $blocks;
 
     case 'configure':
       if ($delta == 0 && user_access('administer module')) {
-        $form['kkblyd_pages'] = array();
+        $form['kkblyd_pages_0'] = array();
+      }
+      else if ($delta == 1 && user_access('administer module')) {
+        $form['kkblyd_pages_1'] = array();
       }
       return $form;
 
     case 'save':
       if ($delta == 0) {
-        variable_set('module_block_setting_1', $edit['kkblyd_pages']);
+        variable_set('kkblyd_pages_0', $edit['kkblyd_pages']);
+      }
+      if ($delta == 1) {
+        variable_set('kkblyd_pages_1', $edit['kkblyd_pages']);
       }
       break;
 
     case 'view':
       if ($delta == 0) {
         $block['content'] = theme('kkblyd_pages_todays_block');
+      }
+      if ($delta == 1) {
+        $block['content'] = theme('kkblyd_pages_area_block');
       }
       return $block;
   }
@@ -382,6 +407,20 @@ function theme_kkblyd_pages_todays_block() {
   $markup = '<div clas="wrapper">';
   $markup .= "<h2 class=\"title\">$title<span class=\"marked\">$date</span></h2>";
   $markup .= '<div class="download">' . l(t("Download todays paper"), 'playlist/idag') . '</div>';
+  $markup .= '</div>';
+  return $markup;
+}
+
+function theme_kkblyd_pages_area_block() {
+  $term = taxonomy_get_term(arg(1));
+  if (!$term) {
+    // Tid 6 is default.
+    $term = taxonomy_get_term(6);
+  }
+  $title = t("the sound news from this week from @area", array('@area' => $term->name));
+  $markup = "<div clas=\"wrapper area-$term->tid\">";
+  $markup .= "<h2 class=\"title\">$title</h2>";
+  $markup .= '<div class="download">' . l(t("Download this week paper"), 'playlist/omraade/'. $term->tid) . '</div>';
   $markup .= '</div>';
   return $markup;
 }
