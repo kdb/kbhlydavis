@@ -20,6 +20,20 @@ function kkblyd_order_perm() {
 function kkblyd_order_menu() {
   $items = array();
 
+  $items['admin/kkblyd'] = array(
+    'title' => t('KKB-LYD settings'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('kkblyd_order_admin_lydbog_form'),
+    'access arguments' => array('administer lydbog order'),
+    'file' => 'kkblyd_order.admin.inc',
+    );
+
+  $items['admin/kkblyd/settings'] = array(
+    'title' => t('KKB-LYD settings'),
+    'weight' => -10,
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+
   $items['katalog/%'] = array(
     'title' => 'Lydbog',
     'description' => '',
@@ -27,30 +41,6 @@ function kkblyd_order_menu() {
     'access arguments' => array('order kkblyd lydbog'),
   );
 
-  $items['admin/kkblyd'] = array(
-     'title' => 'KKB-LYD',
-     'description' => 'KKB-LYD administration.',
-     'position' => 'right',
-     'weight' => -5,
-     'page callback' => 'system_admin_menu_block_page',
-     'access arguments' => array('administer site configuration'),
-     'file' => 'system.admin.inc',
-     'file path' => drupal_get_path('module', 'system'),
-    );
-
-  $items['admin/kkblyd/lydbog-order'] = array(
-    'title' => 'Lydbog order',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('kkblyd_order_admin_lydbog_form'),
-    'access arguments' => array('administer lydbog order'),
-    'file' => 'kkblyd_order.admin.inc',
-  );
-
-  $items['katalog'] = array(
-    'title' => 'Katalog',
-    'page callback' => 'kkblyd_order_katalog_page',
-    'access arguments' => array('access content'),
-  );
   $items['bestil'] = array(
     'title' => t('Order sound news'),
     'page callback' => 'kkblyd_order_lydavis_page',
@@ -82,42 +72,41 @@ function kkblyd_order_order_page() {
  */
 function kkblyd_order_order_form() {
   $form = array();
-  $term = arg(1);
-  $query = db_query("SELECT c.field_author_value, nr.title, nr.body, c.nid, p.field_product_value, p.delta
+  $form['lydbog'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Sound books'),
+    '#collapsible' => FALSE,
+    '#tree' => TRUE,
+  );
+  $nid = arg(1);
+  $query = db_query("SELECT c.field_author_value, nr.title, nr.body, c.nid
                      FROM {content_type_lydbog} AS c
-                     JOIN {content_field_product} AS p ON p.nid = c.nid
-                     JOIN {node} AS n on c.nid = n.nid
                      JOIN {node_revisions} AS nr ON c.nid = nr.nid
-                     JOIN {term_node} AS tn ON c.nid = tn.nid
-                     JOIN {term_data} AS t ON tn.tid = t.tid
-                     WHERE tn.tid = %d
-                     AND n.type = 'lydbog'
-                     ORDER BY c.field_author_value;", $term);
+                     WHERE c.field_catalog_node_nid = %d
+                     ORDER BY c.field_author_value;", $nid);
   while ($row = db_fetch_array($query)) {
-    if (!isset($form['lydbog'])) {
-      $form['lydbog'] = array(
-        '#type' => 'fieldset',
-        '#title' => t('Sound books'),
-        '#collapsible' => FALSE,
-        '#tree' => TRUE,
-      );
-    }
-    if (!isset($form['lydbog'][$row['nid']])) {
-      $form['lydbog'][$row['nid']] = array(
-        '#type' => 'fieldset',
-        '#title' => $row['field_author_value'] . ' - ' . $row['title'],
-        '#collapsible' => FALSE,
-      );
-      $form['lydbog'][$row['nid']]['body'] = array(
-        '#value' => $row['body'],
-      );
-      
-    }
-    $form['lydbog'][$row['nid']][$row['delta']] = array(
-      '#type' => 'textfield',
-      '#title' => $row['field_product_value'],
-      '#size' => 2,
+    $form['lydbog'][$row['nid']] = array(
+      '#type' => 'fieldset',
+      '#title' => $row['field_author_value'] . ' - ' . $row['title'],
+      '#collapsible' => FALSE,
     );
+    $form['lydbog'][$row['nid']]['body'] = array(
+      '#value' => $row['body'],
+    );
+    $query_a = db_query("SELECT field_product_value AS p, delta FROM {content_field_product} WHERE nid = %d", $row['nid']);
+    while ($row_a = db_fetch_array($query_a)) {
+      $form['lydbog'][$row['nid']]['product'][$row_a['delta']] = array(
+        '#type' => 'textfield',
+        '#title' => $row_a['p'],
+        '#size' => 2,
+      );
+    }
+    $query_b = db_query("SELECT field_product_non_buy_value AS p, delta FROM {content_field_product_non_buy} WHERE nid = %d", $row['nid']);
+    while ($row_b = db_fetch_array($query_b)) {
+      $form['lydbog'][$row['nid']]['not_buy'][$row_a['delta']] = array(
+        '#value' => $row_b['p'],
+      );
+    }
   }
   $form['contact'] = array(
     '#type' => 'fieldset',
@@ -152,6 +141,7 @@ function kkblyd_order_order_form() {
  * Validate handler for kkblyd_order_order_form().
  */
 function kkblyd_order_order_form_validate($form, &$form_state) {
+
   $values = $form_state['values'];
   $values['mail-phone'] = $pm;
   // Validation to check is phone number or email.
@@ -167,13 +157,12 @@ function kkblyd_order_order_form_validate($form, &$form_state) {
   else {
     form_set_error($key, t("You must enter a valid phone number or email address"));
   }
-
   // We loop through all book values.
-  foreach ($values['lydbog'] as $nids) {
-    foreach ($nids as $key => $value) {
+  foreach ($values['lydbog'] as $nid => $array) {
+    foreach ($array['product'] as $key => $value) {
       // Validation to check that value is an integer.
       if (!empty($value) && preg_match('/[^\d]/', $value)) {
-        form_set_error($key, t('You must enter a whole number'));
+        form_set_error("lydbog][$nid][product][$key", t('You must enter a whole number'));
       }
       if (!empty($value)) {
         $has_value = TRUE;
@@ -193,12 +182,12 @@ function kkblyd_order_order_form_submit($form, &$form_state) {
   $values = $form_state['values'];
   $products = array();
   foreach ($values['lydbog'] as $nid => $array) {
-    foreach ($array as $delta => $value) {
+    foreach ($array['product'] as $delta => $value) {
       // Validation to check that value is an integer.
       if (!empty($value)) {
         $products[] = array(
           'info' => $form['lydbog'][$nid]['#title'],
-          'product' => $form['lydbog'][$nid][$delta]['#title'],
+          'product' => $form['lydbog'][$nid]['product'][$delta]['#title'],
           'amount' => $value
         );
       }
@@ -223,14 +212,14 @@ function kkblyd_order_order_form_submit($form, &$form_state) {
 }
 
 function kkblyd_order_katalog_page() {
-  $sql = "SELECT name, description, tid
-          FROM {term_data}
-          WHERE vid = 1;";
+  $sql = "SELECT nid FROM {node}
+          WHERE status = 1 AND type = 'catalog';";
   $result = db_query($sql);
   $markup = '';
-  while ($row = db_fetch_array($result)) {
-    $link = l($row['name'], 'katalog/' . $row['tid']);
-    $markup .= theme('kkblyd_order_katalog', $link, $row['description']);
+  while ($row = db_result($result)) {
+    $node = node_load($row);
+    $link = l($node->title, 'katalog/' . $node->nid);
+    $markup .= theme('kkblyd_order_katalog', $link, $node);
   }
   return $markup;
 }
@@ -241,7 +230,7 @@ function kkblyd_order_katalog_page() {
 function kkblyd_order_theme() {
   $items = array();
   $items['kkblyd_order_katalog'] = array(
-    'arguments' => array('link' => NULL, 'description' => NULL),
+    'arguments' => array('link' => NULL, 'node' => NULL),
   );
   $items['kkblyd_order_mail'] = array(
     'arguments' => array('form_values' => NULL, 'products' => NULL),
@@ -254,7 +243,7 @@ function kkblyd_order_theme() {
   return $items;
 }
 
-function theme_kkblyd_order_katalog($link, $description) {
+function theme_kkblyd_order_katalog($link, $node) {
   $result = '';
   $result .= '<div class="container">';
   $result .= '<h2 class="title">'.$link.'</h2>';
