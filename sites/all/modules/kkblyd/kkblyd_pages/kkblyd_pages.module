@@ -47,6 +47,12 @@ function kkblyd_pages_menu() {
     'access arguments' => array('access content'),
   );
 
+  $items['lydavis'] = array(
+    'title' => t('Lydavis'),
+    'page callback' => 'kkblyd_pages_lydavis',
+    'access arguments' => array('access content'),
+  );
+
   $items['playlist/%'] = array(
     'title' => t('Get Playlist'),
     'page callback' => 'kkblyd_pages_make_playlist',
@@ -80,6 +86,13 @@ function kkblyd_pages_front_table() {
   $output .= drupal_get_form('kkblud_pages_get_table_form', $date);
   $output .= '</div>';
   return $output;
+}
+
+/**
+ * Callback function for lydavis, set to term id 6 = noerrebro.
+ */
+function kkblyd_pages_lydavis() {
+  return kkblyd_pages_weekly_area_table(6);
 }
 
 /**
