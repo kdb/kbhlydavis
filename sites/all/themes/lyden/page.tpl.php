@@ -105,6 +105,12 @@
       <?php endif; ?>
     </div><!-- /#hd -->
 
+    <?php if ($bd_top): ?>
+      <div id="bd-top">
+        <?php print $bd_top; ?>
+      </div>
+    <?php endif; ?>
+
     <div id="bd">
       <div id="content">
         <?php if ($content_top): ?>
