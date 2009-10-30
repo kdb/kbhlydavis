@@ -108,3 +108,17 @@ div.title-wrapper {
   color: #003059;
   font-weight: bold; 
 }
+
+/** About us page styles. **/
+#node-3 p {
+  margin-bottom: 1em;
+}
+
+#node-3 strong {
+  font-weight: bold;
+}
+
+#node-3 a {
+  color: #4c9201;
+  padding-left: 125px;
+}
