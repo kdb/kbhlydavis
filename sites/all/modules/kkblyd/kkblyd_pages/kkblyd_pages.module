@@ -32,7 +32,7 @@ function kkblyd_pages_menu() {
 
   $items['forside'] = array(
     'title' => t('Frontpage'),
-    'page callback' => 'kkblyd_pages_table',
+    'page callback' => 'kkblyd_pages_front_table',
     'access arguments' => array('access content'),
   );
 
@@ -50,7 +50,10 @@ function kkblyd_pages_menu() {
   return $items;
 }
 
-function kkblyd_pages_table() {
+/**
+ * Callback function that will generate the front page table view of articles.
+ */
+function kkblyd_pages_front_table() {
   drupal_add_js(drupal_get_path('module', 'kkblyd_pages') . '/form.js');
   if (date('H') > 11) {
     $date = date('Y-m-d');
@@ -61,11 +64,19 @@ function kkblyd_pages_table() {
   return drupal_get_form('kkblud_pages_get_table_form', $date);
 }
 
+/**
+ * Callback function that will generate monday - friday table view of articles
+ */
 function kkblyd_pages_weekly_table() {
   $date = arg(1);
   $choices = array('mandag', 'tirdag', 'onsdag', 'torsdag', 'fredag');
   if (!in_array($date, $choices)) {
-    return drupal_not_found();
+    if (preg_match('/[^0-9]/', $date)) {
+      return drupal_not_found();
+    }
+    else {
+      return kkblyd_pages_weekly_area_table($date);
+    }
   }
   $transform = array(
     'mandag' => 1,
@@ -79,14 +90,28 @@ function kkblyd_pages_weekly_table() {
   $lookup = array(NULL, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6);
   $selected_date = date('Y-m-d', time()-($lookup[7 + $today - $week_day]) * 86400);
   if ((date('H') < 12) && ($today == $week_day)) {
-    dpm('test');
     $selected_date = date('Y-m-d', time() - 7 * 86400);
   }
   drupal_add_js(drupal_get_path('module', 'kkblyd_pages') . '/form.js');
   return drupal_get_form('kkblud_pages_get_table_form', $selected_date);
 }
 
-function kkblud_pages_get_table_form(&$form_state, $date) {
+/**
+ * Callback function that will generate weekly area table view.
+ */
+function kkblyd_pages_weekly_area_table($tid) {
+  $term = taxonomy_get_term($tid);
+  if (empty($term) || $term->vid != 2) {
+    return drupal_not_found();
+  }
+  drupal_add_js(drupal_get_path('module', 'kkblyd_pages') . '/form.js');
+  return drupal_get_form('kkblud_pages_get_table_form', $term);
+}
+
+/**
+ * The form that is used to generate the table views of articles.
+ */
+function kkblud_pages_get_table_form(&$form_state, $arg) {
   $form = array();
   $form['article'] = array(
     '#tree' => TRUE
@@ -96,12 +121,8 @@ function kkblud_pages_get_table_form(&$form_state, $date) {
     '#type' => 'value',
     '#value' => array(),
   );
-
-  $result = db_query("SELECT n.title, n.nid, n.vid, c.field_sound_article_data, f.filesize, f.filepath, f.fid FROM {node} AS n
-                      JOIN {content_type_sound_article} AS c ON c.nid = n.nid
-                      JOIN {files} AS f ON f.fid = c.field_sound_article_fid
-                      WHERE c.field_publish_date_value = '%s';", $date . 'T00:00:00');
-  while ($row = db_fetch_array($result)) {
+  $query = kkblyd_pages_table_query($arg);
+  while ($row = db_fetch_array($query)) {
     $node = new stdClass;
     $node->nid = $row['nid'];
     $node->vid = $row['vid'];
@@ -124,15 +145,22 @@ function kkblud_pages_get_table_form(&$form_state, $date) {
     '#attributes' => array('class' => 'download'),
   );
   
-  
   return $form;
 }
 
+/**
+ * The submit handler for article form, used to generate the playlist.m3u file downloads.
+ */
 function kkblud_pages_get_table_form_submit($form, &$form_state) {
   $checked = array_keys(array_filter($form_state['values']['article']));
-  drupal_goto('playlist/' . join('-', $checked));
+  if (!empty($checked)){
+    drupal_goto('playlist/' . join('-', $checked));
+  }
 }
 
+/**
+ * Theme function for the article table form, used to generate the desired markup.
+ */
 function theme_kkblud_pages_get_table_form($form) {
   $output = '';
   $header = array();
@@ -162,6 +190,9 @@ function theme_kkblud_pages_get_table_form($form) {
   return $output;
 }
 
+/**
+ * Theming function used to render the article cell in the article table view.
+ */
 function theme_kkblud_pages_table_render_article($values) {
   $output = '<div>';
   $output .= '<p class="title">' . check_plain($values['title']) . '</p>';
@@ -197,5 +228,33 @@ function kkblyd_pages_make_playlist() {
   }
   else {
     drupal_goto('<front>');
+  }
+}
+
+function kkblyd_pages_table_query($arg) {
+  if (is_object($arg)) {
+    $term = $arg;
+    $lookup = array(NULL, NULL, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6);
+    $week_day = date('N');
+
+    $monday = date('Y-m-d', time()-($lookup[$week_day + 7]) * 86400) . 'T00:00:00';
+    $tuesday = date('Y-m-d', time()-($lookup[$week_day + 6]) * 86400) . 'T00:00:00';
+    $wednesday = date('Y-m-d', time()-($lookup[$week_day + 5]) * 86400) . 'T00:00:00';
+    $thirsday = date('Y-m-d', time()-($lookup[$week_day + 4]) * 86400) . 'T00:00:00';
+    $friday = date('Y-m-d', time()-($lookup[$week_day + 3]) * 86400) . 'T00:00:00';
+    $week = "('$monday','$tuesday','$wednesday','$thirsday','$friday')";
+    return db_query("SELECT n.title, n.nid, n.vid, c.field_sound_article_data, f.filesize, f.filepath, f.fid FROM {node} AS n
+                       JOIN {content_type_sound_article} AS c ON c.nid = n.nid
+                       JOIN {files} AS f ON f.fid = c.field_sound_article_fid
+                       JOIN {term_node} as t ON t.nid = n.nid
+                       WHERE t.tid = %d
+                       AND c.field_publish_date_value IN $week;", $term->tid);
+  }
+  else if (is_string($arg)) {
+    $date = $arg;
+    return db_query("SELECT n.title, n.nid, n.vid, c.field_sound_article_data, f.filesize, f.filepath, f.fid FROM {node} AS n
+                       JOIN {content_type_sound_article} AS c ON c.nid = n.nid
+                       JOIN {files} AS f ON f.fid = c.field_sound_article_fid
+                       WHERE c.field_publish_date_value = '%s';", $date . 'T00:00:00');
   }
 }
