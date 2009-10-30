@@ -21,6 +21,9 @@ function kkblyd_pages_theme() {
   $items['kkblud_pages_table_render_article'] = array(
     'arguments' => array('values' => NULL),
   );
+  $items['kkblud_pages_render_title_header'] = array(
+    'arguments' => array('title' => NULL, 'note' => NULL),
+  );
   return $items;
 }
 
@@ -31,7 +34,6 @@ function kkblyd_pages_menu() {
   $items = array();
 
   $items['forside'] = array(
-    'title' => t('Frontpage'),
     'page callback' => 'kkblyd_pages_front_table',
     'access arguments' => array('access content'),
   );
@@ -70,7 +72,11 @@ function kkblyd_pages_front_table() {
   else {
     $date = date('Y-m-d', time()-86400);
   }
-  return drupal_get_form('kkblud_pages_get_table_form', $date);
+  $output = '<div class="front-page-wrapper">';
+  $output .= theme('kkblud_pages_render_title_header', t("Today's sound news:"), t("Single articles"));
+  $output .= drupal_get_form('kkblud_pages_get_table_form', $date);
+  $output .= '</div>';
+  return $output;
 }
 
 /**
@@ -150,7 +156,7 @@ function kkblud_pages_get_table_form(&$form_state, $arg) {
   }
   $form['download'] = array(
     '#type' => 'submit',
-    '#value' => t('Download'),
+    '#value' => t('Download all the marked articles'),
     '#attributes' => array('class' => 'download'),
   );
   
@@ -195,7 +201,9 @@ function theme_kkblud_pages_get_table_form($form) {
   }
 
   $output .= theme('table', $header, $rows);
+  $output .= '<div class="form-wrapper">';
   $output .= drupal_render($form);
+  $output .= '</div>';
   return $output;
 }
 
@@ -296,4 +304,11 @@ function kkblyd_pages_taxonomy_table($str_tids = '') {
   }
   drupal_add_js(drupal_get_path('module', 'kkblyd_pages') . '/form.js');
   return drupal_get_form('kkblud_pages_get_table_form', $tids);
+}
+
+function theme_kkblud_pages_render_title_header($title, $note) {
+  $markup = '<div class="title-wrapper">';
+  $markup .= "<h2 class=\"title\">$title<span class=\"marked\">$note</span></h2>";
+  $markup .= '</div>';
+  return $markup;
 }

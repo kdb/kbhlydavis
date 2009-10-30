@@ -1,0 +1,93 @@
+/** Main stylesheet for lyden theme */
+
+/** layout **/
+#bd {
+  margin-bottom: 30px;
+}
+
+/** Title of page **/
+h2.title {
+  background: white;
+  padding: 25px;
+  padding-left: 50px;
+}
+
+h2.title .marked {
+  color: green;
+  padding-left: 1em;
+}
+
+div.title-wrapper {
+  padding: 10px 0;
+  background-color: gray;
+}
+
+/** front page styles **/
+.front-page-wrapper {
+  padding: 10px 0;
+  background-color: #497CAD;
+}
+
+/** Table form of sound articles. **/
+
+#kkblud-pages-get-table-form {
+  background-color: gray;
+}
+
+#kkblud-pages-get-table-form table{
+  background-color: white;
+  width: 100%;
+}
+
+#kkblud-pages-get-table-form table .item-list {
+  display: inline;
+}
+
+#kkblud-pages-get-table-form table .item-list ul {
+  display: inline;
+}
+
+#kkblud-pages-get-table-form table .item-list li {
+  display: inline;
+  list-style: none;
+}
+
+#kkblud-pages-get-table-form table .item-list a {
+  color: green;
+}
+
+
+#kkblud-pages-get-table-form table p.title {
+  font-weight: bold;
+}
+
+#kkblud-pages-get-table-form table a.listen {
+  color: #003059;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+#kkblud-pages-get-table-form table a.download {
+  color: #003059;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+#kkblud-pages-get-table-form table td {
+  padding: 10px 0;
+}
+
+#kkblud-pages-get-table-form table td .form-item{
+  padding-left: 10px;
+}
+
+#kkblud-pages-get-table-form .form-wrapper {
+  background-color: white;
+  margin-top: 10px;
+  padding: 20px;
+}
+
+#kkblud-pages-get-table-form #edit-download {
+  color: #003059;
+  font-weight: bold; 
+}
