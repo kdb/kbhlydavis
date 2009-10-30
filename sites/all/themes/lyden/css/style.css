@@ -180,20 +180,9 @@ div.title-wrapper {
 
 /** catalog order page **/
 #kkblyd-order-order-form {
-  padding: 0 0 10px 0;
-  background-color: #497CAD;
-}
-
-#kkblyd-order-order-form div {
   background-color: white;
   padding: 0 0 20px 10px;
 }
-
-#kkblyd-order-order-form fieldset div {
-  background-color: white;
-  padding: 0;
-}
-
 
 #kkblyd-order-order-form legend {
   font-size: 24px;
@@ -223,4 +212,9 @@ div.title-wrapper {
 
 #kkblyd-order-order-form .sound-book fieldset .form-item label{
   display: inline;
+}
+
+.node-type-catalog #bd {
+  padding: 0 0 10px 0;
+  background-color: #497CAD;
 }

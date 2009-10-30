@@ -15,6 +15,23 @@ function kkblyd_order_perm() {
 }
 
 /**
+ * Implementation of hook_nodeapi().
+ */
+function kkblyd_order_nodeapi(&$node, $op, $teaser = NULL, $page = NULL) {
+  if ($node->type == 'catalog' && !$teaser && $page) {
+    switch ($op) {
+      case 'view':
+        $test = kkblyd_order_order_page();
+        drupal_set_title($node->title);
+        $node->content = array('form' => array('#value' => $test));
+        break;
+    }
+  }
+}
+
+
+
+/**
  * Implementation of hook_menu().
  */
 function kkblyd_order_menu() {
@@ -32,12 +49,6 @@ function kkblyd_order_menu() {
     'title' => t('KKB-LYD settings'),
     'weight' => -10,
     'type' => MENU_DEFAULT_LOCAL_TASK,
-  );
-
-  $items['katalog/%'] = array(
-    'description' => '',
-    'page callback' => 'kkblyd_order_order_page',
-    'access arguments' => array('order kkblyd lydbog'),
   );
 
   $items['bestil'] = array(
