@@ -47,6 +47,15 @@ function kkblyd_pages_menu() {
     'page callback' => 'kkblyd_pages_make_playlist',
     'access arguments' => array('access content'),
   );
+
+  $items['kategori/%'] = array(
+      'title' => 'Taxonomy term',
+      'page callback' => 'kkblyd_pages_taxonomy_table',
+      'page arguments' => array(1),
+      'access arguments' => array('access content'),
+      'type' => MENU_CALLBACK,
+    );
+
   return $items;
 }
 
@@ -200,7 +209,7 @@ function theme_kkblud_pages_table_render_article($values) {
   $terms = array();
   foreach ($values['terms'] as $term) {
     if ($term->vid != 3) {
-      $terms[] = l($term->name, taxonomy_term_path($term));
+      $terms[] = l($term->name, 'kategori/' . $term->tid);
     }
   }
   $output .= theme('item_list', $terms, NULL, 'ul', array('class' => 'terms'));
@@ -232,17 +241,24 @@ function kkblyd_pages_make_playlist() {
 }
 
 function kkblyd_pages_table_query($arg) {
+  if (is_string($arg)) {
+    $date = $arg;
+    return db_query("SELECT n.title, n.nid, n.vid, c.field_sound_article_data, f.filesize, f.filepath, f.fid FROM {node} AS n
+                       JOIN {content_type_sound_article} AS c ON c.nid = n.nid
+                       JOIN {files} AS f ON f.fid = c.field_sound_article_fid
+                       WHERE c.field_publish_date_value = '%s';", $date . 'T00:00:00');
+  }
+  $lookup = array(NULL, NULL, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6);
+  $week_day = date('N');
+
+  $monday = date('Y-m-d', time()-($lookup[$week_day + 7]) * 86400) . 'T00:00:00';
+  $tuesday = date('Y-m-d', time()-($lookup[$week_day + 6]) * 86400) . 'T00:00:00';
+  $wednesday = date('Y-m-d', time()-($lookup[$week_day + 5]) * 86400) . 'T00:00:00';
+  $thirsday = date('Y-m-d', time()-($lookup[$week_day + 4]) * 86400) . 'T00:00:00';
+  $friday = date('Y-m-d', time()-($lookup[$week_day + 3]) * 86400) . 'T00:00:00';
+  $week = "('$monday','$tuesday','$wednesday','$thirsday','$friday')";
   if (is_object($arg)) {
     $term = $arg;
-    $lookup = array(NULL, NULL, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6);
-    $week_day = date('N');
-
-    $monday = date('Y-m-d', time()-($lookup[$week_day + 7]) * 86400) . 'T00:00:00';
-    $tuesday = date('Y-m-d', time()-($lookup[$week_day + 6]) * 86400) . 'T00:00:00';
-    $wednesday = date('Y-m-d', time()-($lookup[$week_day + 5]) * 86400) . 'T00:00:00';
-    $thirsday = date('Y-m-d', time()-($lookup[$week_day + 4]) * 86400) . 'T00:00:00';
-    $friday = date('Y-m-d', time()-($lookup[$week_day + 3]) * 86400) . 'T00:00:00';
-    $week = "('$monday','$tuesday','$wednesday','$thirsday','$friday')";
     return db_query("SELECT n.title, n.nid, n.vid, c.field_sound_article_data, f.filesize, f.filepath, f.fid FROM {node} AS n
                        JOIN {content_type_sound_article} AS c ON c.nid = n.nid
                        JOIN {files} AS f ON f.fid = c.field_sound_article_fid
@@ -250,11 +266,34 @@ function kkblyd_pages_table_query($arg) {
                        WHERE t.tid = %d
                        AND c.field_publish_date_value IN $week;", $term->tid);
   }
-  else if (is_string($arg)) {
-    $date = $arg;
+  else if (is_array($arg)) {
+    $terms = '(' . join(',', $arg) . ')';
     return db_query("SELECT n.title, n.nid, n.vid, c.field_sound_article_data, f.filesize, f.filepath, f.fid FROM {node} AS n
                        JOIN {content_type_sound_article} AS c ON c.nid = n.nid
                        JOIN {files} AS f ON f.fid = c.field_sound_article_fid
-                       WHERE c.field_publish_date_value = '%s';", $date . 'T00:00:00');
+                       JOIN {term_node} as t ON t.nid = n.nid
+                       WHERE t.tid IN $terms
+                       AND c.field_publish_date_value IN $week;");
   }
+}
+
+function kkblyd_pages_taxonomy_table($str_tids = '') {
+  $terms = taxonomy_terms_parse_string($str_tids);
+  if ($terms['operator'] != 'and' && $terms['operator'] != 'or') {
+    drupal_not_found();
+  }
+  if ($terms['tids']) {
+    $result = db_query(db_rewrite_sql('SELECT t.tid, t.name FROM {term_data} t WHERE t.tid IN ('. db_placeholders($terms['tids']) .')', 't', 'tid'), $terms['tids']);
+    $tids = array(); // we rebuild the $tids-array so it only contains terms the user has access to.
+    $names = array();
+    while ($term = db_fetch_object($result)) {
+      $tids[] = $term->tid;
+      $names[] = $term->name;
+    }
+  }
+  else {
+    return drupal_not_found();
+  }
+  drupal_add_js(drupal_get_path('module', 'kkblyd_pages') . '/form.js');
+  return drupal_get_form('kkblud_pages_get_table_form', $tids);
 }
