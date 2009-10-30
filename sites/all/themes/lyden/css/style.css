@@ -13,13 +13,13 @@ h2.title {
 }
 
 h2.title .marked {
-  color: green;
+  color: #4c9201;
   padding-left: 1em;
 }
 
 div.title-wrapper {
   padding: 10px 0;
-  background-color: gray;
+  background-color: #ccd5dc;
 }
 
 /** front page styles **/
@@ -35,7 +35,7 @@ div.title-wrapper {
 }
 
 #bd-top .download {
-  background-color: gray;
+  background-color: #ccd5dc;
   padding: 20px 0 20px 40px;
 }
 
@@ -48,7 +48,7 @@ div.title-wrapper {
 /** Table form of sound articles. **/
 
 #kkblud-pages-get-table-form {
-  background-color: gray;
+  background-color: #ccd5dc;
 }
 
 #kkblud-pages-get-table-form table{
@@ -70,7 +70,7 @@ div.title-wrapper {
 }
 
 #kkblud-pages-get-table-form table .item-list a {
-  color: green;
+  color: #4c9201;
 }
 
 
