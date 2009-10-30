@@ -35,7 +35,6 @@ function kkblyd_order_menu() {
   );
 
   $items['katalog/%'] = array(
-    'title' => 'Lydbog',
     'description' => '',
     'page callback' => 'kkblyd_order_order_page',
     'access arguments' => array('order kkblyd lydbog'),
@@ -77,6 +76,7 @@ function kkblyd_order_order_form() {
     '#title' => t('Sound books'),
     '#collapsible' => FALSE,
     '#tree' => TRUE,
+    '#attributes' => array('class' => 'sound-book'),
   );
   $nid = arg(1);
   $query = db_query("SELECT c.field_author_value, nr.title, nr.body, c.nid
@@ -91,6 +91,8 @@ function kkblyd_order_order_form() {
       '#collapsible' => FALSE,
     );
     $form['lydbog'][$row['nid']]['body'] = array(
+      '#prefix' => '<p class="description">',
+      '#suffix' => '</p>',
       '#value' => $row['body'],
     );
     $query_a = db_query("SELECT field_product_value AS p, delta FROM {content_field_product} WHERE nid = %d", $row['nid']);
@@ -104,7 +106,7 @@ function kkblyd_order_order_form() {
     $query_b = db_query("SELECT field_product_non_buy_value AS p, delta FROM {content_field_product_non_buy} WHERE nid = %d", $row['nid']);
     while ($row_b = db_fetch_array($query_b)) {
       $form['lydbog'][$row['nid']]['not_buy'][$row_a['delta']] = array(
-        '#value' => $row_b['p'],
+        '#value' => '<p class="form-item">' . $row_b['p'] . '</p>',
       );
     }
   }

@@ -177,3 +177,50 @@ div.title-wrapper {
   display: block;
 }
 /* End hide from IE-mac */
+
+/** catalog order page **/
+#kkblyd-order-order-form {
+  padding: 0 0 10px 0;
+  background-color: #497CAD;
+}
+
+#kkblyd-order-order-form div {
+  background-color: white;
+  padding: 0 0 20px 10px;
+}
+
+#kkblyd-order-order-form fieldset div {
+  background-color: white;
+  padding: 0;
+}
+
+
+#kkblyd-order-order-form legend {
+  font-size: 24px;
+  font-weight: bold;
+  color: #003059;
+  padding: 20px 0 20px 30px;
+}
+
+#kkblyd-order-order-form fieldset fieldset legend {
+  font-size: 18px;
+  font-weight: bold;
+  color: #003059;
+  padding: 10px 0 10px 10px;
+}
+
+#kkblyd-order-order-form .sound-book fieldset p.description{
+  width: 500px;
+  float: left;
+}
+
+#kkblyd-order-order-form .sound-book fieldset .form-item{
+  float: right;
+  clear: right;
+  font-weight: bold;
+  padding-right: 20px;
+}
+
+#kkblyd-order-order-form .sound-book fieldset .form-item label{
+  display: inline;
+}
