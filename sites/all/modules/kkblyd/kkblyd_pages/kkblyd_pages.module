@@ -24,6 +24,9 @@ function kkblyd_pages_theme() {
   $items['kkblud_pages_render_title_header'] = array(
     'arguments' => array('title' => NULL, 'note' => NULL),
   );
+  $items['kkblyd_pages_todays_block'] = array(
+    'arguments' => array(),
+  );
   return $items;
 }
 
@@ -229,11 +232,23 @@ function theme_kkblud_pages_table_render_article($values) {
  * Function to make a playlist.m3u that users can download
  */
 function kkblyd_pages_make_playlist() {
-  $nid = explode('-', arg(1));
-  $lookup = '(' . join(',', $nid) . ')';
-  $result = db_query("SELECT filepath FROM {files} AS f
-                      JOIN {content_type_sound_article} AS c ON c.field_sound_article_fid = f.fid
-                      WHERE c.nid IN %s", $lookup);
+  $arg = arg(1);
+  if ($arg == 'idag') {
+    $date = date('Y-m-d') . 'T00:00:00';
+    $result = db_query("SELECT filepath FROM {files} AS f
+                        JOIN {content_type_sound_article} AS c ON c.field_sound_article_fid = f.fid
+                        WHERE c.field_publish_date_value = '$date'");
+  }
+  else {
+    if (preg_match('/[^0-9\-]/', $arg)) {
+      return drupal_not_found();
+    }
+    $nid = explode('-', $arg);
+    $lookup = '(' . join(',', $nid) . ')';
+    $result = db_query("SELECT filepath FROM {files} AS f
+                        JOIN {content_type_sound_article} AS c ON c.field_sound_article_fid = f.fid
+                        WHERE c.nid IN %s", $lookup);
+  }
   $path = '';
   while ($row = db_result($result)) {
     $path .= url($row, array('absolute' => TRUE)) . PHP_EOL;
@@ -309,6 +324,51 @@ function kkblyd_pages_taxonomy_table($str_tids = '') {
 function theme_kkblud_pages_render_title_header($title, $note) {
   $markup = '<div class="title-wrapper">';
   $markup .= "<h2 class=\"title\">$title<span class=\"marked\">$note</span></h2>";
+  $markup .= '</div>';
+  return $markup;
+}
+
+/**
+ * Implementation of hook_block().
+ */
+function kkblyd_pages_block($op = 'list', $delta = 0, $edit = array()) {
+  switch ($op) {
+
+    case 'list':
+      $blocks[0]['info'] = t('Kkblyd_pages todays articles');
+      return $blocks;
+
+    case 'configure':
+      if ($delta == 0 && user_access('administer module')) {
+        $form['kkblyd_pages'] = array();
+      }
+      return $form;
+
+    case 'save':
+      if ($delta == 0) {
+        variable_set('module_block_setting_1', $edit['kkblyd_pages']);
+      }
+      break;
+
+    case 'view':
+      if ($delta == 0) {
+        $block['content'] = theme('kkblyd_pages_todays_block');
+      }
+      return $block;
+  }
+}
+
+function theme_kkblyd_pages_todays_block() {
+  if (date('H') > 11) {
+    $date = format_date(time(), 'custom', 'j. F Y', NULL, 'da');
+  }
+  else {
+    $date = format_date(time() - 86400, 'custom', 'j. F Y', NULL, 'da');
+  }
+  $title = t("Today's soundnews:");
+  $markup = '<div clas="wrapper">';
+  $markup .= "<h2 class=\"title\">$title<span class=\"marked\">$date</span></h2>";
+  $markup .= '<div class="download">' . l(t("Download todays paper"), 'playlist/idag') . '</div>';
   $markup .= '</div>';
   return $markup;
 }

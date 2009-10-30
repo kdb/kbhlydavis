@@ -28,6 +28,23 @@ div.title-wrapper {
   background-color: #497CAD;
 }
 
+#bd-top {
+  margin-bottom: 30px;
+  padding: 10px 0;
+  background-color: #497CAD;
+}
+
+#bd-top .download {
+  background-color: gray;
+  padding: 20px 0 20px 40px;
+}
+
+#bd-top .download a {
+  color: #003059;
+  font-weight: bold;
+  text-decoration: none;
+}
+
 /** Table form of sound articles. **/
 
 #kkblud-pages-get-table-form {
