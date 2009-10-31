@@ -390,3 +390,9 @@ div.title-wrapper {
   margin: 0;
   padding: 20px 11px;
 }
+
+.not-front.page-node #content-area,
+.not-front.page-bestil #content-area {
+  border-top: none;
+}
+
