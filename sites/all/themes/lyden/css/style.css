@@ -13,10 +13,6 @@
   border-bottom: 10px solid #497CAD;
 }
 
-#content-top {
-  background-color: white;
-}
-
 /** Title of page **/
 h2.title {
   background: white;
@@ -37,20 +33,51 @@ div.title-wrapper {
 /** front page styles **/
 
 #content-top {
+  border-bottom: 10px solid #497CAD;
+  border-top: 10px solid #497CAD;
   margin-bottom: 30px;
-  padding: 10px 0;
-  background-color: #497CAD;
+  padding: 0;
+  background-color: white;
 }
 
-#content-top .download {
+#content-top div.download {
   background-color: #ccd5dc;
-  padding: 20px 0 20px 40px;
+  height: 60px;
+}
+
+#content-top span.download {
+  background-image: url('../images/2d-sprite.png');
+  background-position: -187px -97px;
+  display: block;
+  height: 50px;
+  width: 50px;
+  float: left;
+  margin: 5px 0 0 50px;
 }
 
 #content-top .download a {
+  margin: 20px 0 20px 20px;
   color: #003059;
   font-weight: bold;
   text-decoration: none;
+  float: left;
+}
+
+#kkblud-pages-get-table-form #edit-download {
+  border: none;
+  background-color: white;
+  margin: 20px 0 20px 20px;
+  float: left;
+}
+
+#kkblud-pages-get-table-form span.download {
+  background-image: url('../images/2d-sprite.png');
+  background-position: -527px -97px;
+  display: block;
+  height: 50px;
+  width: 50px;
+  float: left;
+  margin: 5px 0 0 50px;
 }
 
 /** Table form of sound articles. **/
@@ -109,7 +136,7 @@ div.title-wrapper {
 #kkblud-pages-get-table-form .form-wrapper {
   background-color: white;
   margin-top: 10px;
-  padding: 20px;
+  height: 60px;
 }
 
 #kkblud-pages-get-table-form #edit-download {
@@ -317,27 +344,32 @@ div.title-wrapper {
 }
 
 #block-kkblyd_pages-2 .right-sidebar {
-  height: 250px;
-  width: 200px;
-  padding: 50px 20px;
+  height: 325px;
+  width: 240px;
   float: left;
   background-color: #CCD5DC;
 }
 
+#block-kkblyd_pages-2 .right-sidebar .r-wrapper {
+  padding: 30px 20px;
+}
+
 #block-kkblyd_pages-2 .main .wrapper {
-  height: 250px;
+  height: 325px;
   width: 480px;
-  padding: 30px 0 20px 0;
   background-color: white;
   float: left;
 }
 
-#block-kkblyd_pages-2 .main .papers {
-  height: 240px;
+#block-kkblyd_pages-2 .main div.papers {
+  float: left;
+}
+
+#block-kkblyd_pages-2 .main span.papers {
+  height: 245px;
   width: 210px;
   background-image: url('../images/2d-sprite.png');
   background-position: -390px -300px;
-  float: left;
   display: block;
   margin: 50px 20px 0 10px;
 }
