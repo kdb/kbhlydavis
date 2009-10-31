@@ -30,6 +30,9 @@ function kkblyd_pages_theme() {
   $items['kkblyd_pages_area_block'] = array(
     'arguments' => array(),
   );
+  $items['kkblyd_pages_front_page_header_block'] = array(
+    'arguments' => array(),
+  );
   return $items;
 }
 
@@ -379,24 +382,41 @@ function kkblyd_pages_block($op = 'list', $delta = 0, $edit = array()) {
 
     case 'list':
       $blocks[0]['info'] = t('Kkblyd_pages todays articles');
-       $blocks[1]['info'] = t('Kkblyd_pages area articles');
+      $blocks[1]['info'] = t('Kkblyd_pages area articles');
+      $blocks[2]['info'] = t('Kkblyd_pages front page header');
       return $blocks;
 
     case 'configure':
-      if ($delta == 0 && user_access('administer module')) {
-        $form['kkblyd_pages_0'] = array();
-      }
-      else if ($delta == 1 && user_access('administer module')) {
-        $form['kkblyd_pages_1'] = array();
+      if ($delta == 2 && user_access('administer module')) {
+        $form['kkblyd_pages_front'] = array(
+          '#type' => 'fieldset',
+          '#title' => t('Front page text'),
+          '#collapsible' => TRUE,
+        );
+        $form['kkblyd_pages_front']['main'] = array(
+          '#type' => 'textarea',
+          '#title' => t('Main'),
+          '#description' => t('The text you enter here will appear in the middel region.'),
+          '#default_value' => variable_get('kkblyd_pages_front_main', ''),
+          '#cols' => 60,
+          '#rows' => 5,
+        );
+        $form['kkblyd_pages_front']['sidebar'] = array(
+          '#type' => 'textarea',
+          '#title' => t('Sidebar'),
+          '#description' => t('The text you enter here appears in the right sidebar region.'),
+          '#default_value' => variable_get('kkblyd_pages_front_sidebar', ''),
+          '#cols' => 60,
+          '#rows' => 5,
+        );
+        
       }
       return $form;
 
     case 'save':
-      if ($delta == 0) {
-        variable_set('kkblyd_pages_0', $edit['kkblyd_pages']);
-      }
-      if ($delta == 1) {
-        variable_set('kkblyd_pages_1', $edit['kkblyd_pages']);
+      if ($delta == 2) {
+        variable_set('kkblyd_pages_front_main', $edit['main']);
+        variable_set('kkblyd_pages_front_sidebar', $edit['sidebar']);
       }
       break;
 
@@ -406,6 +426,9 @@ function kkblyd_pages_block($op = 'list', $delta = 0, $edit = array()) {
       }
       if ($delta == 1) {
         $block['content'] = theme('kkblyd_pages_area_block');
+      }
+      if ($delta == 2) {
+        $block['content'] = theme('kkblyd_pages_front_page_header_block');
       }
       return $block;
   }
@@ -437,5 +460,12 @@ function theme_kkblyd_pages_area_block() {
   $markup .= "<h2 class=\"title\">$title</h2>";
   $markup .= '<div class="download">' . l(t("Download this week paper"), 'playlist/omraade/'. $term->tid) . '</div>';
   $markup .= '</div>';
+  return $markup;
+}
+
+function theme_kkblyd_pages_front_page_header_block() {
+  $main = filter_xss(variable_get('kkblyd_pages_front_main', ''), array('a', 'em', 'strong', 'cite', 'code', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'p'));
+  $sidebar = filter_xss(variable_get('kkblyd_pages_front_sidebar', ''), array('a', 'em', 'strong', 'cite', 'code', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'p'));
+  $markup = "$main</div><div class=\"right-sidebar\">$sidebar";
   return $markup;
 }

@@ -17,6 +17,7 @@ regions[navbar]         = navigation bar
 regions[header]         = header
 regions[footer]         = footer
 regions[right]          = sidebar right
+regions[content_top]    = content top
 
 features[] = favicon
 features[] = primary_links

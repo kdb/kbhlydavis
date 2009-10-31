@@ -8,10 +8,9 @@
 #content-header {
   background-color: white;
 }
-
-#content {
-  background-color: #497CAD;
-  padding-bottom: 10px;
+#content-area {
+  border-top: 10px solid #497CAD;
+  border-bottom: 10px solid #497CAD;
 }
 
 #content-top {
@@ -37,18 +36,18 @@ div.title-wrapper {
 
 /** front page styles **/
 
-#bd-top {
+#content-top {
   margin-bottom: 30px;
   padding: 10px 0;
   background-color: #497CAD;
 }
 
-#bd-top .download {
+#content-top .download {
   background-color: #ccd5dc;
   padding: 20px 0 20px 40px;
 }
 
-#bd-top .download a {
+#content-top .download a {
   color: #003059;
   font-weight: bold;
   text-decoration: none;
@@ -307,5 +306,56 @@ div.title-wrapper {
 }
 
 #block-menu-secondary-links li.active-trail a {
+  color: #4c9201;
+}
+
+/** header block **/
+#bd-top {
+  border-bottom: 10px solid #497CAD;
+  margin: 0 0 30px 0; 
+  background-color: #CCD5DC;
+}
+
+#block-kkblyd_pages-2 .right-sidebar {
+  width: 200px;
+  padding: 50px 20px;
+  float: left;
+}
+
+#block-kkblyd_pages-2 .main {
+  width: 480px;
+  padding: 30px 0 20px 240px;
+  float: left;
+  background-color: white;
+}
+
+#block-kkblyd_pages-2 p {
+  padding: 10px 0;
+}
+
+#block-kkblyd_pages-2 strong {
+  font-weight: bold;
+}
+
+#block-kkblyd_pages-2 .main ul {
+  padding-left: 0;
+}
+
+#block-kkblyd_pages-2 .main li {
+  display: inline;
+  padding-left: 75px;
+}
+
+#block-kkblyd_pages-2 .main a.private {
+  font-weight: bold;
+  color: #d34ca8;
+}
+
+#block-kkblyd_pages-2 .main a.library {
+
+}
+
+#block-kkblyd_pages-2 a {
+  font-weight: bold;
   color: #4c9201;
 }
