@@ -355,6 +355,7 @@ function kkblyd_pages_taxonomy_table($str_tids = '') {
       $tids[] = $term->tid;
       $names[] = $term->name;
     }
+    drupal_set_title(t('Podcasts from: @terms', array('@terms' => join(', ', $names))));
   }
   else {
     return drupal_not_found();
