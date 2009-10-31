@@ -144,9 +144,10 @@ function kkblyd_pages_weekly_area_table($tid) {
   if ($tid == 'alle') {
     drupal_add_js(drupal_get_path('module', 'kkblyd_pages') . '/form.js');
     $output = '<div class="area-page-wrapper">';
-    $output .= theme('kkblud_pages_render_title_header', t('Sound articles from all of Copenhagen'), ''));
+    $output .= theme('kkblud_pages_render_title_header', t('All of Copenhagen:'), t("Single articles"));
     $output .= drupal_get_form('kkblud_pages_get_table_form', $tid);
     $output .= '</div>';
+    return $output;
   }
   $term = taxonomy_get_term($tid);
   if (empty($term) || $term->vid != 2) {
@@ -320,7 +321,7 @@ function kkblyd_pages_make_playlist() {
 
 function kkblyd_pages_table_query($arg) {
   if (is_string($arg)) {
-    if $date == 'all' {
+    if ($arg == 'alle') {
       return db_query("SELECT n.title, n.nid, n.vid, c.field_sound_article_data, f.filesize, f.filepath, f.fid FROM {node} AS n
                          JOIN {content_type_sound_article} AS c ON c.nid = n.nid
                          JOIN {files} AS f ON f.fid = c.field_sound_article_fid
@@ -525,7 +526,7 @@ function theme_kkblyd_pages_sounder_paper_header_block() {
   foreach ($terms as $tid => $name) {
     $links[] = l($name, "lydavis/$tid", array("attributes" => array('class' => 'area-' . $tid)));
   }
-  $links[] = l(t('All of Copenhagen'), 'lydavis/' . join('-', array_keys($terms)), array("attributes" => array('class' => 'area-all')));
+  $links[] = l(t('All of Copenhagen'), 'lydavis/alle');
   $markup .= theme('item_list', $links);
   return $markup;
 }
