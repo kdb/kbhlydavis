@@ -9,6 +9,11 @@
   background-color: white;
 }
 
+#content {
+  background-color: #497CAD;
+  padding-bottom: 10px;
+}
+
 /** Title of page **/
 h2.title {
   background: white;
@@ -27,10 +32,6 @@ div.title-wrapper {
 }
 
 /** front page styles **/
-.front-page-wrapper {
-  padding: 10px 0;
-  background-color: #497CAD;
-}
 
 #bd-top {
   margin-bottom: 30px;
