@@ -322,11 +322,21 @@ div.title-wrapper {
   float: left;
 }
 
-#block-kkblyd_pages-2 .main {
+#block-kkblyd_pages-2 .main .wrapper {
   width: 480px;
-  padding: 30px 0 20px 240px;
-  float: left;
+  padding: 30px 0 20px 0;
   background-color: white;
+  float: left;
+}
+
+#block-kkblyd_pages-2 .main .papers {
+  height: 240px;
+  width: 210px;
+  background-image: url('../images/2d-sprite.png');
+  background-position: -390px -300px;
+  float: left;
+  display: block;
+  margin: 30px 20px 70px 10px;
 }
 
 #block-kkblyd_pages-2 p {
@@ -342,8 +352,7 @@ div.title-wrapper {
 }
 
 #block-kkblyd_pages-2 .main li {
-  display: inline;
-  padding-left: 75px;
+  float: left;
 }
 
 #block-kkblyd_pages-2 .main a.private {
@@ -351,9 +360,27 @@ div.title-wrapper {
   color: #d34ca8;
 }
 
-#block-kkblyd_pages-2 .main a.library {
-
+#block-kkblyd_pages-2 .main span.private {
+  background-image: url('../images/2d-sprite.png');
+  background-position: -210px -510px;
+  float: left;
+  display: block;
+  margin-top: 2px;
+  width: 70px;
+  height: 20px;
 }
+
+#block-kkblyd_pages-2 .main span.library {
+  background-image: url('../images/2d-sprite.png');
+  background-position: -210px -471px;
+  float: left;
+  display: block;
+  margin-top: 2px;
+  width: 70px;
+  height: 20px;
+  margin-left: 20px;
+}
+
 
 #block-kkblyd_pages-2 a {
   font-weight: bold;

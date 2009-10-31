@@ -28,9 +28,12 @@
 ?>
 <div id="block-<?php print $block->module .'-'. $block->delta; ?>" class="block block-<?php print $block->module ?> clear-block">
   <div class="main">
-    <?php if ($block->subject): ?>
-      <h2><?php print $block->subject ?></h2>
-    <?php endif;?>    
-    <?php print $block->content ?>
+    <span class="papers"></span>
+    <div class="wrapper">
+      <?php if ($block->subject): ?>
+        <h2><?php print $block->subject ?></h2>
+      <?php endif;?>
+      <?php print $block->content ?>
+      </div>
   </div>
 </div>
