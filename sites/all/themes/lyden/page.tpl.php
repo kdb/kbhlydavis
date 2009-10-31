@@ -106,7 +106,7 @@
     </div><!-- /#hd -->
 
     <?php if ($bd_top): ?>
-      <div id="bd-top">
+      <div id="bd-top" class="clear-block">
         <?php print $bd_top; ?>
       </div>
     <?php endif; ?>

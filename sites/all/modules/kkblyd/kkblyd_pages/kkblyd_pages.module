@@ -33,6 +33,9 @@ function kkblyd_pages_theme() {
   $items['kkblyd_pages_front_page_header_block'] = array(
     'arguments' => array(),
   );
+  $items['kkblyd_pages_sounder_paper_header_block'] = array(
+    'arguments' => array(),
+  );
   return $items;
 }
 
@@ -384,6 +387,7 @@ function kkblyd_pages_block($op = 'list', $delta = 0, $edit = array()) {
       $blocks[0]['info'] = t('Kkblyd_pages todays articles');
       $blocks[1]['info'] = t('Kkblyd_pages area articles');
       $blocks[2]['info'] = t('Kkblyd_pages front page header');
+      $blocks[3]['info'] = t('Kkblyd_pages sound paper header');
       return $blocks;
 
     case 'configure':
@@ -411,12 +415,30 @@ function kkblyd_pages_block($op = 'list', $delta = 0, $edit = array()) {
         );
         
       }
+      else if ($delta == 3 && user_access('administer module')) {
+        $form['kkblyd_pages_sound'] = array(
+          '#type' => 'fieldset',
+          '#title' => t('Front page text'),
+          '#collapsible' => TRUE,
+        );
+        $form['kkblyd_pages_sound']['left'] = array(
+          '#type' => 'textarea',
+          '#title' => t('Left'),
+          '#description' => t('The text you enter here will appear in the left region.'),
+          '#default_value' => variable_get('kkblyd_pages_sound_paper', ''),
+          '#cols' => 60,
+          '#rows' => 5,
+        );
+      }
       return $form;
 
     case 'save':
       if ($delta == 2) {
         variable_set('kkblyd_pages_front_main', $edit['main']);
         variable_set('kkblyd_pages_front_sidebar', $edit['sidebar']);
+      }
+      else if ($delta == 3) {
+        variable_set('kkblyd_pages_sound_paper', $edit['left']);
       }
       break;
 
@@ -429,6 +451,9 @@ function kkblyd_pages_block($op = 'list', $delta = 0, $edit = array()) {
       }
       if ($delta == 2) {
         $block['content'] = theme('kkblyd_pages_front_page_header_block');
+      }
+      if ($delta == 3) {
+        $block['content'] = theme('kkblyd_pages_sounder_paper_header_block');
       }
       return $block;
   }
@@ -467,5 +492,22 @@ function theme_kkblyd_pages_front_page_header_block() {
   $main = filter_xss(variable_get('kkblyd_pages_front_main', ''), array('a', 'em', 'strong', 'cite', 'code', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'p'));
   $sidebar = filter_xss(variable_get('kkblyd_pages_front_sidebar', ''), array('a', 'em', 'strong', 'cite', 'code', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'p'));
   $markup = "$main</div><div class=\"right-sidebar\">$sidebar";
+  return $markup;
+}
+
+function theme_kkblyd_pages_sounder_paper_header_block() {
+  $left = filter_xss(variable_get('kkblyd_pages_sound_paper', ''), array('a', 'em', 'strong', 'cite', 'code', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'p'));
+  $markup = "$left</div><div class=\"right\">";
+  $terms = array();
+  $result = db_query("SELECT tid, name from {term_data} WHERE vid = 2");
+  while ($row = db_fetch_array($result)) {
+    $terms[$row['tid']] = $row['name'];
+  }
+  $links = array();
+  foreach ($terms as $tid => $name) {
+    $links[] = l($name, "kategori/$tid", array("attributes" => array('class' => 'area-' . $tid)));
+  }
+  $links[] = l(t('All of Copenhagen'), 'kategori/' . join('-', array_keys($terms)), array("attributes" => array('class' => 'area-all')));
+  $markup .= theme('item_list', $links);
   return $markup;
 }

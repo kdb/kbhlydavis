@@ -309,7 +309,7 @@ div.title-wrapper {
   color: #4c9201;
 }
 
-/** header block **/
+/** header block front **/
 #bd-top {
   border-bottom: 10px solid #497CAD;
   margin: 0 0 30px 0; 
@@ -358,4 +358,35 @@ div.title-wrapper {
 #block-kkblyd_pages-2 a {
   font-weight: bold;
   color: #4c9201;
+}
+
+/** header block lydavis **/
+.not-front #bd-top {
+  background-color: white;
+}
+
+#block-kkblyd_pages-3 .left{
+  padding: 50px 0 50px 50px;
+  float: left;
+  width: 300px;
+}
+
+#block-kkblyd_pages-3 .right {
+  float: left;
+  width: 610px;
+}
+
+#block-kkblyd_pages-3 .right a {
+  text-decoration: none;
+  color: #003059;
+  font-weight: bold;
+}
+
+#block-kkblyd_pages-3 .right li {
+  list-style: none;
+  float: left;
+  height: 100px;
+  width: 125px;
+  margin: 0;
+  padding: 20px 11px;
 }
