@@ -5,6 +5,10 @@
   margin-bottom: 30px;
 }
 
+#content-header {
+  background-color: white;
+}
+
 /** Title of page **/
 h2.title {
   background: white;
