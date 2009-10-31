@@ -253,6 +253,9 @@ function kkblyd_order_theme() {
     'arguments' => array('form_values' => NULL, 'products' => NULL),
     'template' => 'kkblyd_order-sound-mail',
   );
+  $items['kkblyd_order_lydavis_form'] = array(
+    'arguments' => array('form' => NULL),
+  );
   return $items;
 }
 
@@ -266,38 +269,33 @@ function theme_kkblyd_order_katalog($link, $node) {
 }
 
 function kkblyd_order_lydavis_page() {
-  $output = '';
-  $output .= drupal_get_form('kkblyd_order_lydavis_form');
+  $output = drupal_get_form('kkblyd_order_lydavis_form');
   return $output;
 }
 
 function kkblyd_order_lydavis_form() {
   $form = array();
-  $form['area'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('City area'),
+  $form['tape'] = array(
     '#tree' => TRUE,
+  );
+  $form['cd'] = array(
+    '#tree' => TRUE,
+  );
+  $form['area_data'] = array(
+    '#type' => 'value',
+    '#value' => array()
   );
   $sql = "SELECT name, tid FROM {term_data}
           WHERE vid = 2;";
   $result = db_query($sql);
   while ($row = db_fetch_array($result)) {
-    $form['area'][$row['tid']] = array(
-      '#type' => 'fieldset',
-      '#title' => t(check_plain($row['name'])),
-      '#description' => t('Select what type of material you want to recieve from this area'),
-      '#collapsible' => TRUE,
-    );
-    $form['area'][$row['tid']]['tape'] = array(
+    $form['tape'][$row['tid']] = array(
       '#type' => 'checkbox',
-      '#title' => t('Tape'),
-      '#default_value' => 0,
     );
-    $form['area'][$row['tid']]['cd'] = array(
+    $form['cd'][$row['tid']] = array(
       '#type' => 'checkbox',
-      '#title' => t('Cd'),
-      '#default_value' => 0,
     );
+    $form['area_data']['#value'][$row['tid']] = $row['name'];
   }
   $form['info'] = array(
     '#type' => 'textarea',
@@ -352,14 +350,10 @@ function kkblyd_order_lydavis_form_validate($form, &$form_state) {
   else {
     form_set_error($key, t("You must enter a valid phone number or email address"));
   }
-  foreach ($values['area'] as $area) {
-    if ($area['tape'] || $area ['cd']) {
-      $accept = TRUE;
-      break;
-    }
-  }
-  if (!$accept) {
-    form_set_error('area', t('You must select at least 1 tape or cd to recieve'));
+  $tapes = array_filter($values['tape']);
+  $cds = array_filter($values['cd']);
+  if (empty($tapes) && empty($cds)) {
+    form_set_error('', t('You must select at least 1 tape or cd to recieve'));
   }
 }
 
@@ -367,19 +361,20 @@ function kkblyd_order_lydavis_form_submit($form, &$form_state) {
   global $user;
   $values = $form_state['values'];
   $products = array();
-  foreach ($values['area'] as $tid => $area) {
-    if ($area['tape']) {
-      $products[] = array(
-        'type' => t('Tape'),
-        'term' => taxonomy_get_term($tid),
-      );
-    }
-    if ($area['cd']) {
-      $products[] = array(
-        'type' => t('CD'),
-        'term' => taxonomy_get_term($tid),
-      );
-    }
+  $tapes = array_keys(array_filter($values['tape']));
+  $cds = array_keys(array_filter($values['cd']));
+
+  foreach ($tapes as $tid ) {
+    $products[] = array(
+      'type' => t('Tape'),
+      'term' => taxonomy_get_term($tid),
+    );
+  }
+  foreach ($cds as $tid ) {
+    $products[] = array(
+      'type' => t('CD'),
+      'term' => taxonomy_get_term($tid),
+    );
   }
   $message = theme('kkblyd_order_sound_mail', $values, $products);
   $subject = t("Subscription to sound news from @site", array('@site' => variable_get('site_name', "KKB-LYD")));
@@ -397,4 +392,22 @@ function kkblyd_order_lydavis_form_submit($form, &$form_state) {
     );
     drupal_set_message("Your subscription has been sent and you will be contacted shortly.");
   }
+}
+
+function kkblyd_order_playlist($array) {
+  $txt = 'http://localhost/kkb-lyd/files/lyd-artikkel/Django_Dose_Tracking_Trunk_-_Episode_1__09_21_2009.mp3';
+  drupal_set_header('Content-Type: audio/x-mpegurl; charset=utf-8');
+  drupal_set_header('Content-Disposition: attachment; filename="playlist.m3u"');
+  echo $txt;
+}
+
+function theme_kkblyd_order_lydavis_form($form) {
+  $header = array(t('City area'), t('CD'), t('Tape'));
+  $rows = array();
+  foreach ($form['area_data']['#value'] as $tid=> $name) {
+    $rows[] = array($name, drupal_render($form['cd'][$tid]), drupal_render($form['tape'][$tid]));
+  }
+  $output = theme('table', $header, $rows);
+  $output .= drupal_render($form);
+  return $output;
 }

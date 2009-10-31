@@ -214,7 +214,49 @@ div.title-wrapper {
   display: inline;
 }
 
-.node-type-catalog #bd {
+.node-type-catalog #bd,
+.page-bestil #bd {
   padding: 0 0 10px 0;
   background-color: #497CAD;
 }
+
+/** order page **/
+
+.page-bestil #content {
+  background-color: white;
+}
+
+.page-bestil .messages {
+  padding: 10px;
+  font-weight: bold;
+}
+
+#kkblyd-order-lydavis-form {
+  padding-bottom: 20px;
+}
+
+#kkblyd-order-lydavis-form div{
+  padding: 0 20px;
+}
+
+#kkblyd-order-lydavis-form div.form-item{
+  padding: 0;
+}
+
+#kkblyd-order-lydavis-form div.form-item div{
+  padding: 0;
+}
+
+#kkblyd-order-lydavis-form table {
+  width: 100%;
+}
+
+#kkblyd-order-lydavis-form table td{
+  padding: 5px;
+}
+
+#kkblyd-order-lydavis-form table th{
+  padding: 5px;
+  font-weight: bold;
+}
+
