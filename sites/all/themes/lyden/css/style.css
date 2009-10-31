@@ -313,16 +313,19 @@ div.title-wrapper {
 #bd-top {
   border-bottom: 10px solid #497CAD;
   margin: 0 0 30px 0; 
-  background-color: #CCD5DC;
+  background-color: white;
 }
 
 #block-kkblyd_pages-2 .right-sidebar {
+  height: 250px;
   width: 200px;
   padding: 50px 20px;
   float: left;
+  background-color: #CCD5DC;
 }
 
 #block-kkblyd_pages-2 .main .wrapper {
+  height: 250px;
   width: 480px;
   padding: 30px 0 20px 0;
   background-color: white;
@@ -336,7 +339,7 @@ div.title-wrapper {
   background-position: -390px -300px;
   float: left;
   display: block;
-  margin: 30px 20px 70px 10px;
+  margin: 50px 20px 0 10px;
 }
 
 #block-kkblyd_pages-2 p {
@@ -388,10 +391,6 @@ div.title-wrapper {
 }
 
 /** header block lydavis **/
-.not-front #bd-top {
-  background-color: white;
-}
-
 #block-kkblyd_pages-3 .left{
   padding: 50px 0 50px 50px;
   float: left;
