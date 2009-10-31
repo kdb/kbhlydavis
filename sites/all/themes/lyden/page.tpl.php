@@ -132,6 +132,12 @@
           </div></div> <!-- /#content-header -->
         <?php endif; ?>
 
+        <?php if ($right): ?>
+          <div id="right">
+            <?php print $right; ?>
+          </div>
+        <?php endif; ?>
+
         <div id="content-area">
           <?php print $content; ?>
         </div>

@@ -116,4 +116,13 @@ body.page-node #content-area div.node {
   padding-bottom: 40px;
 }
 
+.sidebar-right #content-area {
+  width: 720px;
+}
 
+#right {
+  padding-bottom: 10px;
+  width: 240px;
+  float: right;
+  background-color: #497CAD;
+}
