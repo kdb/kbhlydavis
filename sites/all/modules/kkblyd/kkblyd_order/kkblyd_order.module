@@ -27,38 +27,7 @@ function kkblyd_order_nodeapi(&$node, $op, $teaser = NULL, $page = NULL) {
         break;
     }
   }
-  if ($node->type == 'sound_article') {
-    switch ($op) {
-      case 'presave':
-        // Set publish date to noon of the selected date.
-        $node->publish_on = strtotime($node->field_publish_date[0]['value']) + 12 * 3600;
-        // Set publish date to noon +7 days of the selected date.
-        $node->ubpublish_on = strtotime($node->field_publish_date[0]['value']) + 12 * 3600 + 7 * 86400;
-        break;
-    }
-  }
 }
-
-function kkblyd_order_form_alter(&$form, &$form_state, $form_id) {
-  if ($form_id == 'sound_article_node_form') {
-    $form['scheduler_settings']['#type'] = '';
-    $form['scheduler_settings']['publish_on']['#type'] = 'value';
-    $form['scheduler_settings']['publish_on']['#value'] = '';
-    $form['scheduler_settings']['unpublish_on']['#type'] = 'value';
-    $form['scheduler_settings']['unpublish_on']['#value'] = '';
-    $form['#submit'][] = 'kkblyd_order_node_submit';
-  }
-}
-
-function kkblyd_order_node_submit($form, &$form_state) {
-  if (isset($form['nid']['#value']) && !empty($form['nid']['#value'])) {
-    $form['#redirect'] = '<front>';
-  }
-  else {
-    $form['#redirect'] = 'node/add/sound-article';
-  }
-}
-
 
 /**
  * Implementation of hook_menu().
@@ -440,3 +409,4 @@ function theme_kkblyd_order_lydavis_form($form) {
   $output .= drupal_render($form);
   return $output;
 }
+
