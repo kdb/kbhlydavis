@@ -205,8 +205,8 @@ function kkblud_pages_get_table_form(&$form_state, $arg) {
  * The submit handler for article form, used to generate the playlist.m3u file downloads.
  */
 function kkblud_pages_get_table_form_submit($form, &$form_state) {
-  $checked = array_keys(array_filter($form_state['values']['article']));
-  if (!empty($checked)){
+  if (!empty($form_state['values']['article'])){
+    $checked = array_keys(array_filter($form_state['values']['article']));
     drupal_goto('playlist/' . join('-', $checked));
   }
 }
