@@ -1,0 +1,9 @@
+<?php
+// $Id$
+
+/**
+ * Modifications for the sound article editing form.
+ */
+function kkblyd_admin_form_sound_article_node_form_alter(&$form, &$form_state) {
+  drupal_add_js(drupal_get_path('module', 'kkblyd_admin') . '/kkblyd_admin.node_form.js');
+}
