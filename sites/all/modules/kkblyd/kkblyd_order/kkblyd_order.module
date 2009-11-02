@@ -43,10 +43,21 @@ function kkblyd_order_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'sound_article_node_form') {
     $form['scheduler_settings']['#type'] = '';
     $form['scheduler_settings']['publish_on']['#type'] = 'value';
+    $form['scheduler_settings']['publish_on']['#value'] = '';
     $form['scheduler_settings']['unpublish_on']['#type'] = 'value';
+    $form['scheduler_settings']['unpublish_on']['#value'] = '';
+    $form['#submit'][] = 'kkblyd_order_node_submit';
   }
 }
 
+function kkblyd_order_node_submit($form, &$form_state) {
+  if (isset($form['nid']['#value']) && !empty($form['nid']['#value'])) {
+    $form['#redirect'] = '<front>';
+  }
+  else {
+    $form['#redirect'] = 'node/add/sound-article';
+  }
+}
 
 
 /**
