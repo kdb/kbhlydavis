@@ -43,6 +43,7 @@ div.title-wrapper {
 #content-top div.download {
   background-color: #ccd5dc;
   height: 60px;
+  padding-left: 50px;
 }
 
 #content-top span.download {
@@ -52,7 +53,7 @@ div.title-wrapper {
   height: 50px;
   width: 50px;
   float: left;
-  margin: 5px 0 0 50px;
+  margin: 5px 0 0 0;
 }
 
 #content-top .download a {
@@ -77,7 +78,11 @@ div.title-wrapper {
   height: 50px;
   width: 50px;
   float: left;
-  margin: 5px 0 0 50px;
+  margin: 5px 0 0 0;
+}
+
+#kkblud-pages-get-table-form .form-wrapper-wrapper {
+  margin-left: 50px;
 }
 
 /** Table form of sound articles. **/
@@ -91,21 +96,38 @@ div.title-wrapper {
   width: 100%;
 }
 
+#kkblud-pages-get-table-form table td.td-1 {
+  width: 50px;
+}
+
+#kkblud-pages-get-table-form table td.td-3,
+#kkblud-pages-get-table-form table td.td-4 {
+  width: 160px;
+}
+
 #kkblud-pages-get-table-form table .item-list {
-  display: inline;
+  float: left;
+}
+
+#kkblud-pages-get-table-form table .info {
+  float: left;
 }
 
 #kkblud-pages-get-table-form table .item-list ul {
-  display: inline;
+  padding: 0;
+  margin: 0;
 }
 
 #kkblud-pages-get-table-form table .item-list li {
-  display: inline;
+  float: left;
   list-style: none;
+  padding: 0;
+  margin: 0 0 0 5px;
 }
 
 #kkblud-pages-get-table-form table .item-list a {
   color: #4c9201;
+  margin: 0;
 }
 
 
@@ -113,25 +135,57 @@ div.title-wrapper {
   font-weight: bold;
 }
 
-#kkblud-pages-get-table-form table a.listen {
+#kkblud-pages-get-table-form table a {
+  margin: 20px 0 0 10px;
   color: #003059;
   font-weight: bold;
   text-decoration: none;
-}
-
-#kkblud-pages-get-table-form table a.download {
-  color: #003059;
-  font-weight: bold;
-  text-decoration: none;
+  float: left;
 }
 
 #kkblud-pages-get-table-form table td {
+  background-color: white;
   padding: 10px 0;
 }
 
-#kkblud-pages-get-table-form table td .form-item{
-  padding-left: 10px;
+#kkblud-pages-get-table-form table td div.wrapper {
+  float: left;
+  margin-left: 20px;
 }
+
+#kkblud-pages-get-table-form table td .form-item{
+  padding-left: 20px;
+}
+
+#kkblud-pages-get-table-form table td span.paper {
+  width: 90px;
+  height: 60px;
+  background-image: url('../images/2d-sprite.png');
+  display: block;
+  float: left;
+  background-position: 0px -400px;
+}
+
+#kkblud-pages-get-table-form table td span.non {
+    background-position: 0px -400px;
+}
+
+#kkblud-pages-get-table-form table td span.jyl {
+    background-position: -220px -400px;
+}
+
+#kkblud-pages-get-table-form table td span.inf {
+    background-position: 0px -466px;
+}
+
+#kkblud-pages-get-table-form table td span.pol {
+    background-position: -110px -466px;
+}
+
+#kkblud-pages-get-table-form table td span.ber {
+    background-position: -110px -400px;
+}
+
 
 #kkblud-pages-get-table-form .form-wrapper {
   background-color: white;
@@ -142,6 +196,20 @@ div.title-wrapper {
 #kkblud-pages-get-table-form #edit-download {
   color: #003059;
   font-weight: bold; 
+}
+
+#kkblud-pages-get-table-form td span.listen {
+  background-image: url('../images/2d-sprite.png');
+  background-position: -457px -97px;
+  display: block;
+  height: 50px;
+  width: 50px;
+  float: left;
+  margin: 5px 0 0 0;
+}
+
+#kkblud-pages-get-table-form td span.download {
+  margin: 5px 0 0 0;
 }
 
 /** About us page styles. **/

@@ -99,7 +99,7 @@ function kkblyd_pages_front_table() {
  * Callback function for lydavis, set to term id 6 = noerrebro.
  */
 function kkblyd_pages_lydavis() {
-  return kkblyd_pages_weekly_area_table(6);
+  return kkblyd_pages_weekly_area_table(10);
 }
 
 /**
@@ -221,7 +221,7 @@ function theme_kkblud_pages_get_table_form($form) {
   foreach ($form['article_data']['#value'] as $nid => $item) {
     foreach ($form['article_data']['#value'][$nid]['terms'] as $term) {
       if ($term->vid == 3) {
-        $class = substr($term->name, 0, 3);
+        $class = strtolower(substr($term->name, 0, 3));
       }
     }
     if (!$class) {
@@ -229,19 +229,19 @@ function theme_kkblud_pages_get_table_form($form) {
     }
     $rows[] = array(
       'data' => array(
-        drupal_render($form['article'][$nid]),
-        theme('kkblud_pages_table_render_article', $form['article_data']['#value'][$nid]),
-        l(t('Listen'), $form['article_data']['#value'][$nid]['listen'], array('attributes' => array('class' => 'listen'))),
-        l(t('Download'), $form['article_data']['#value'][$nid]['download'], array('attributes' => array('class' => 'download')))
+        array('data' => drupal_render($form['article'][$nid]), 'class' => 'td-1'),
+        array('data' => '<span class="paper ' . $class . '"></span>' . theme('kkblud_pages_table_render_article', $form['article_data']['#value'][$nid]), 'class' => 'td-2'),
+        array('data' => '<span class="listen"></span>' . l(t('Listen'), $form['article_data']['#value'][$nid]['listen'], array('attributes' => array('class' => 'listen'))), 'class' => 'td-3'),
+        array('data' => '<span class="download"></span>' . l(t('Download'), $form['article_data']['#value'][$nid]['download'], array('attributes' => array('class' => 'download'))), 'class' => 'td-4')
       ),
       'class' => $class,
     );
   }
 
   $output .= theme('table', $header, $rows);
-  $output .= '<div class="form-wrapper clear-block"><span class="download"></span>';
+  $output .= '<div class="form-wrapper clear-block"><div class="form-wrapper-wrapper"><span class="download"></span>';
   $output .= drupal_render($form);
-  $output .= '</div>';
+  $output .= '</div></div>';
   return $output;
 }
 
@@ -249,7 +249,7 @@ function theme_kkblud_pages_get_table_form($form) {
  * Theming function used to render the article cell in the article table view.
  */
 function theme_kkblud_pages_table_render_article($values) {
-  $output = '<div>';
+  $output = '<div class="wrapper">';
   $output .= '<p class="title">' . check_plain($values['title']) . '</p>';
   $output .= '<span class="info">' . $values['duration'] . ' ' . $values['size'] . '</span>';
   $terms = array();
