@@ -84,6 +84,10 @@
   <title><?php print $head_title; ?></title>
   <?php print $head; ?>
   <?php print $styles; ?>
+  <!--[if IE]>
+  <?php print $ie_styles; ?>
+  <![endif]-->
+
   <?php print $scripts; ?>
 </head>
 <body id="kbhlyd-dk" class="<?php print $body_classes; ?>">

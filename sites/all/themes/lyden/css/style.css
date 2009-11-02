@@ -65,10 +65,14 @@ div.title-wrapper {
 }
 
 #kkblud-pages-get-table-form #edit-download {
+  width:auto;
+  overflow:visible;
   border: none;
   background-color: white;
   margin: 20px 0 20px 20px;
   float: left;
+  color: #003059;
+  font-weight: bold;
 }
 
 #kkblud-pages-get-table-form span.download {
@@ -191,11 +195,6 @@ div.title-wrapper {
   background-color: white;
   margin-top: 10px;
   height: 60px;
-}
-
-#kkblud-pages-get-table-form #edit-download {
-  color: #003059;
-  font-weight: bold; 
 }
 
 #kkblud-pages-get-table-form td span.listen {
@@ -605,4 +604,3 @@ div.title-wrapper {
 .not-front.page-bestil #content-area {
   border-top: none;
 }
-
