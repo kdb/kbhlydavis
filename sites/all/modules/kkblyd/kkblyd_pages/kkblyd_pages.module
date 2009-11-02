@@ -255,7 +255,12 @@ function theme_kkblud_pages_table_render_article($values) {
   $terms = array();
   foreach ($values['terms'] as $term) {
     if ($term->vid != 3) {
-      $terms[] = l($term->name, 'kategori/' . $term->tid);
+      if ($term->vid == 2) {
+        $terms[] = l($term->name, 'lydavis/' . $term->tid);
+      }
+      else {
+        $terms[] = l($term->name, 'kategori/' . $term->tid);
+      }
     }
   }
   $output .= theme('item_list', $terms, NULL, 'ul', array('class' => 'terms'));
@@ -524,9 +529,9 @@ function theme_kkblyd_pages_sounder_paper_header_block() {
   }
   $links = array();
   foreach ($terms as $tid => $name) {
-    $links[] = l($name, "lydavis/$tid", array("attributes" => array('class' => 'area-' . $tid)));
+    $links[] = array('data' => '<span class="area-' . $tid . '"></span>' . l($name, "lydavis/$tid", array("attributes" => array('class' => 'area-' . $tid))), 'class' => 'clear-block');
   }
-  $links[] = l(t('All of Copenhagen'), 'lydavis/alle');
+  $links[] = '<span class="area-all"></span>' . l(t('All of Copenhagen'), 'lydavis/alle');
   $markup .= theme('item_list', $links);
   return $markup;
 }

@@ -500,6 +500,7 @@ div.title-wrapper {
 #block-kkblyd_pages-3 .right {
   float: left;
   width: 610px;
+  height: 420px;
 }
 
 #block-kkblyd_pages-3 .right a {
@@ -511,11 +512,62 @@ div.title-wrapper {
 #block-kkblyd_pages-3 .right li {
   list-style: none;
   float: left;
-  height: 100px;
-  width: 125px;
+  height: 140px;
+  width: 145px;
+  padding: 0;
   margin: 0;
-  padding: 20px 11px;
 }
+
+#block-kkblyd_pages-3 li span {
+  height: 85px;
+  width: 85px;
+  display: block;
+  background-image: url('../images/2d-sprite.png');
+  margin: 10px 0 0 10px;
+}
+
+#block-kkblyd_pages-3 li a {
+  margin: 0;
+}
+
+#block-kkblyd_pages-3 li span.area-2 {
+  background-position: -200px -295px;
+}
+
+#block-kkblyd_pages-3 li span.area-3 {
+  background-position: -0px -185px;
+}
+
+#block-kkblyd_pages-3 li span.area-4 {
+  background-position: -300px -185px;
+}
+
+#block-kkblyd_pages-3 li span.area-5 {
+  background-position: -100px -185px;
+}
+
+#block-kkblyd_pages-3 li span.area-6 {
+  background-position: -0px -295px;
+}
+
+#block-kkblyd_pages-3 li span.area-7 {
+  background-position: -100px -295px;
+}
+
+#block-kkblyd_pages-3 li span.area-8 {
+  background-position: -300px -295px;
+}
+
+#block-kkblyd_pages-3 li span.area-9 {
+  background-position: -200px -185px;
+}
+
+#block-kkblyd_pages-3 li span.area-all {
+  background-position: -400px -185px;
+}
+
+
+
 
 .not-front.page-node #content-area,
 .not-front.page-bestil #content-area {
