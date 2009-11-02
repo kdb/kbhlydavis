@@ -99,7 +99,7 @@ function kkblyd_pages_front_table() {
  * Callback function for lydavis, set to term id 6 = noerrebro.
  */
 function kkblyd_pages_lydavis() {
-  return kkblyd_pages_weekly_area_table(10);
+  return kkblyd_pages_weekly_area_table('alle');
 }
 
 /**
@@ -501,12 +501,19 @@ function theme_kkblyd_pages_todays_block() {
 function theme_kkblyd_pages_area_block() {
   $term = taxonomy_get_term(arg(1));
   if (!$term) {
-    // Tid 6 is default.
-    $term = taxonomy_get_term(6);
+    // alle is default.
+    $term = 'alle';
   }
-  $title = t("the sound news from this week from @area", array('@area' => $term->name));
-  $markup = "<div clas=\"wrapper area-$term->tid\">";
-  $markup .= "<h2 class=\"title\">$title</h2>";
+  if (is_string($term)) {
+    $title = t("the sound news from this week from all of Copenhagen");
+    $markup = '<div clas="wrapper"><div class="clear-block">';
+    $markup .= "<h2 class=\"title\">$title</h2>" . '<span class="area-all"></span></div>';
+  }
+  else {
+    $title = t("the sound news from this week from @area", array('@area' => $term->name));
+    $markup .= '<div clas="wrapper"><div class="clear-block">';
+    $markup .= "<h2 class=\"title\">$title</h2>" . '<span class="area-' . $term->tid . '"></span></div>';
+  }
   $markup .= '<div class="download clear-block"><span class="download"></span>' . l(t("Download this week paper"), 'playlist/omraade/'. $term->tid) . '</div>';
   $markup .= '</div>';
   return $markup;
