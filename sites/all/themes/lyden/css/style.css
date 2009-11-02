@@ -213,17 +213,32 @@ div.title-wrapper {
 }
 
 /** About us page styles. **/
-#node-3 p {
+.node p {
   margin-bottom: 1em;
 }
 
-#node-3 strong {
+.node .clear-block {
+  margin-bottom: 1em;
+}
+
+.node .clear-block .green-marker {
+  background-image: url('../images/2d-sprite.png');
+  background-position: -210px -471px;
+  float: left;
+  display: block;
+  margin-top: 2px;
+  width: 70px;
+  height: 20px;
+  margin-right: 20px;
+}
+
+.node strong {
   font-weight: bold;
 }
 
-#node-3 a {
+.node .clear-block a {
+  float: left;
   color: #4c9201;
-  padding-left: 125px;
 }
 
 /** Catalog list page **/
