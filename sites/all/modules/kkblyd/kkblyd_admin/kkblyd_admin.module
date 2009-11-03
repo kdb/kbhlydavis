@@ -34,7 +34,13 @@ function kkblyd_admin_views_api() {
 function kkblyd_admin_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'sound_article_node_form') {
     drupal_add_js(drupal_get_path('module', 'kkblyd_admin') . '/kkblyd_admin.node_form.js');
-
+    $form['promote'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Include in daily news'),
+      '#default_value' => 1,
+      '#weight' => -3,
+    );
+    unset($form['options']['promote']);
     // Hide the scheduler-settings, since we set them programmatically.
     $form['scheduler_settings']['#type'] = '';
     $form['scheduler_settings']['publish_on']['#type'] = 'value';
