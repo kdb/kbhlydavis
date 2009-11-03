@@ -613,3 +613,20 @@ a span.text {
 .not-front.page-bestil #content-area {
   border-top: none;
 }
+
+/** form error messages **/
+
+#content-header div.wrapper {
+  border-top: 10px solid #497CAD;
+  margin: 30px 0 0 0;
+  background-color: white;
+  padding: 20px
+}
+
+#content-header div.wrapper .messages.error {
+  background-color: white;
+  background: none;
+  border: none;
+  color: red;
+ font-weight: bold
+}

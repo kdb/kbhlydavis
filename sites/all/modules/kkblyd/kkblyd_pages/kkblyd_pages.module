@@ -209,13 +209,21 @@ function kkblud_pages_get_table_form(&$form_state, $arg) {
 }
 
 /**
+ * The validate handler for article form, used to generate the playlist.m3u file downloads.
+ */
+function kkblud_pages_get_table_form_validate($form, &$form_state) {
+  $values = (array_filter($form_state['values']['article']));
+  if (empty($values)) {
+    form_set_error('article', '<a id="kkblyd-pages-table-goto" name="avis" href="#avis" ></a>' . t("You need to select minimum one article to download"));
+  }
+}
+
+/**
  * The submit handler for article form, used to generate the playlist.m3u file downloads.
  */
 function kkblud_pages_get_table_form_submit($form, &$form_state) {
-  if (!empty($form_state['values']['article'])){
-    $checked = array_keys(array_filter($form_state['values']['article']));
-    drupal_goto('playlist/' . join('-', $checked));
-  }
+  $checked = array_keys(array_filter($form_state['values']['article']));
+  drupal_goto('playlist/' . join('-', $checked));
 }
 
 /**
