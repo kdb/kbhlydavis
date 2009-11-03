@@ -238,8 +238,8 @@ function theme_kkblud_pages_get_table_form($form) {
       'data' => array(
         array('data' => drupal_render($form['article'][$nid]), 'class' => 'td-1'),
         array('data' => '<span class="paper ' . $class . '"></span>' . theme('kkblud_pages_table_render_article', $form['article_data']['#value'][$nid]), 'class' => 'td-2'),
-        array('data' => '<span class="listen"></span>' . l(t('Listen'), $form['article_data']['#value'][$nid]['listen'], array('attributes' => array('class' => 'listen'))), 'class' => 'td-3'),
-        array('data' => '<span class="download"></span>' . l(t('Download'), $form['article_data']['#value'][$nid]['download'], array('attributes' => array('class' => 'download'))), 'class' => 'td-4')
+        array('data' => l('<span class="listen"></span><span class="text">' . t('Listen') . '</span>', $form['article_data']['#value'][$nid]['listen'], array('attributes' => array('class' => 'listen clear-block'), 'html' => TRUE)), 'class' => 'td-3'),
+        array('data' => l('<span class="download"></span><span class="text">' . t('Download') . '</span>', $form['article_data']['#value'][$nid]['download'], array('attributes' => array('class' => 'download'), 'html' => TRUE)), 'class' => 'td-4')
       ),
       'class' => $class,
     );
@@ -521,7 +521,7 @@ function theme_kkblyd_pages_area_block() {
     $markup .= '<div clas="wrapper"><div class="clear-block">';
     $markup .= "<h2 class=\"title\">$title</h2>" . '<span class="area-' . $term->tid . '"></span></div>';
   }
-  $markup .= '<div class="download clear-block"><span class="download"></span>' . l(t("Download this week paper"), 'playlist/omraade/'. $term->tid) . '</div>';
+  $markup .= '<div class="download clear-block">' . l('<span class="download"></span><span class="text">' . t("Download this week paper") . '</span>', 'playlist/omraade/'. $term->tid, array('html' => TRUE)) . '</div>';
   $markup .= '</div>';
   return $markup;
 }
@@ -543,9 +543,9 @@ function theme_kkblyd_pages_sounder_paper_header_block() {
   }
   $links = array();
   foreach ($terms as $tid => $name) {
-    $links[] = array('data' => '<span class="area-' . $tid . '"></span>' . l($name, "lydavis/$tid", array("attributes" => array('class' => 'area-' . $tid))), 'class' => 'clear-block');
+    $links[] = array('data' => l('<span class="area-' . $tid . '"></span>' . $name, "lydavis/$tid", array("attributes" => array('class' => 'area-' . $tid), 'html' => TRUE)), 'class' => 'clear-block');
   }
-  $links[] = '<span class="area-all"></span>' . l(t('All of Copenhagen'), 'lydavis/alle');
+  $links[] = l(t('<span class="area-all"></span>' . 'All of Copenhagen'), 'lydavis/alle', array('html' => TRUE));
   $markup .= theme('item_list', $links);
   return $markup;
 }
