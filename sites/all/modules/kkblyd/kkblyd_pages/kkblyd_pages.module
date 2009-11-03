@@ -157,7 +157,7 @@ function kkblyd_pages_weekly_area_table($tid) {
     return $output;
   }
   $term = taxonomy_get_term($tid);
-  if (empty($term) || $term->vid != 2 || $term->vid != 5) {
+  if (empty($term) || $term->vid != 2 && $term->vid != 5) {
     return drupal_not_found();
   }
   drupal_add_js(drupal_get_path('module', 'kkblyd_pages') . '/form.js');
