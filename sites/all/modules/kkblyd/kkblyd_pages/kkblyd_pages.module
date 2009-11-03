@@ -11,6 +11,13 @@
  */
 
 /**
+ * Implementation of hook_perm().
+ */
+function kkblyd_pages_perm() {
+  return array('administer kkblyd blocks');
+}
+
+/**
  * Implementaion of hook_theme().
  */
 function kkblyd_pages_theme() {
@@ -415,7 +422,7 @@ function kkblyd_pages_block($op = 'list', $delta = 0, $edit = array()) {
       return $blocks;
 
     case 'configure':
-      if ($delta == 2 && user_access('administer module')) {
+      if ($delta == 2 && user_access('administer kkblyd blocks')) {
         $form['kkblyd_pages_front'] = array(
           '#type' => 'fieldset',
           '#title' => t('Front page text'),
@@ -439,7 +446,7 @@ function kkblyd_pages_block($op = 'list', $delta = 0, $edit = array()) {
         );
         
       }
-      else if ($delta == 3 && user_access('administer module')) {
+      else if ($delta == 3 && user_access('administer kkblyd blocks')) {
         $form['kkblyd_pages_sound'] = array(
           '#type' => 'fieldset',
           '#title' => t('Front page text'),
