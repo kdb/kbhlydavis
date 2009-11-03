@@ -500,7 +500,7 @@ function theme_kkblyd_pages_todays_block() {
   $title = t("Today's soundnews:");
   $markup = '<div clas="wrapper">';
   $markup .= "<h2 class=\"title\">$title<span class=\"marked\">$date</span></h2>";
-  $markup .= '<div class="download clear-block"><span class="download"></span>' . l(t("Download todays paper"), 'playlist/idag') . '</div>';
+  $markup .= '<div class="download clear-block">' . l('<span class="download"></span><span class="text">' . t("Download todays paper") . '</span>', 'playlist/idag', array('html' => TRUE)) . '</div>';
   $markup .= '</div>';
   return $markup;
 }
