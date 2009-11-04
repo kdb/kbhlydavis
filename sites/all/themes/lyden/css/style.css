@@ -630,3 +630,21 @@ a span.text {
   color: red;
  font-weight: bold
 }
+
+/** user login form **/
+form#user-login {
+  background-color: white;
+  padding: 20px;
+}
+
+/** tabs **/
+ul.tabs a{
+  color: #003059;
+}
+
+/** user profile **/
+div.profile {
+  padding: 20px;
+  background-color: white;
+  margin: 0;
+}
