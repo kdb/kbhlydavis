@@ -88,6 +88,7 @@ function kkblyd_pages_menu() {
  * Callback function that will generate the front page table view of articles.
  */
 function kkblyd_pages_front_table() {
+  _kkblyd_pages_feed_head(t('The daily sound article'), url('podcast/dagens'));
   drupal_add_js(drupal_get_path('module', 'kkblyd_pages') . '/form.js');
   if (date('H') > 11) {
     $date = date('Y-m-d');
@@ -160,6 +161,7 @@ function kkblyd_pages_weekly_area_table($tid) {
   if (empty($term) || $term->vid != 2 && $term->vid != 5) {
     return drupal_not_found();
   }
+  _kkblyd_pages_feed_head(t('The daily sound article from @area', array('@area' => $term->name)), url('podcast/' . $term->tid));
   drupal_add_js(drupal_get_path('module', 'kkblyd_pages') . '/form.js');
   $output = '<div class="area-page-wrapper">';
   $output .= theme('kkblud_pages_render_title_header', $term->name . ':', t("Single articles"));
@@ -403,6 +405,7 @@ function kkblyd_pages_taxonomy_table($str_tids = '') {
       $tids[] = $term->tid;
       $names[] = $term->name;
     }
+    _kkblyd_pages_feed_head(t('The daily sound article from @terms', array('@terms' => join(', ', $names))), url('podcast/' . $term->tid));
     drupal_set_title(t('Podcasts from: @terms', array('@terms' => join(', ', $names))));
   }
   else {
@@ -559,4 +562,8 @@ function theme_kkblyd_pages_sounder_paper_header_block() {
   $links[] = l(t('<span class="area-all"></span>' . 'All of Copenhagen'), 'lydavis/alle', array('html' => TRUE));
   $markup .= theme('item_list', $links);
   return $markup;
+}
+
+function _kkblyd_pages_feed_head($title, $url) {
+  drupal_set_html_head('<link rel="alternate" type="application/rss+xml" title="' . $title . '" href="' . $url .'" />');
 }
