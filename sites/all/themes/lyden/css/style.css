@@ -438,6 +438,10 @@ a span.text {
   background-color: #CCD5DC;
 }
 
+#block-kkblyd_pages-2 .right-sidebar.empty {
+  background-color: white;
+}
+
 #block-kkblyd_pages-2 .right-sidebar .r-wrapper {
   padding: 30px 20px;
 }

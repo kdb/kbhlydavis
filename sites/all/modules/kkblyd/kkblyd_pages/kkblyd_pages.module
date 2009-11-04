@@ -543,7 +543,10 @@ function theme_kkblyd_pages_area_block() {
 function theme_kkblyd_pages_front_page_header_block() {
   $main = filter_xss(variable_get('kkblyd_pages_front_main', ''), array('a', 'em', 'strong', 'cite', 'code', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'p', 'div', 'span'));
   $sidebar = filter_xss(variable_get('kkblyd_pages_front_sidebar', ''), array('a', 'em', 'strong', 'cite', 'code', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'p', 'div', 'span'));
-  $markup = "$main</div><div class=\"right-sidebar\"><div class=\"r-wrapper\">$sidebar</div>";
+  if (strlen($sidebar) == 0) {
+    $class = 'empty';
+  }
+  $markup = "$main</div><div class=\"right-sidebar $class\"><div class=\"r-wrapper\">$sidebar</div>";
   return $markup;
 }
 
