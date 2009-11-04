@@ -447,10 +447,20 @@ a span.text {
 }
 
 #block-kkblyd_pages-2 .main .wrapper {
-  height: 325px;
+  margin-top: 30px;
+  height: 295px;
   width: 480px;
   background-color: white;
   float: left;
+}
+
+#block-kkblyd_pages-2 .main .wrapper h2 {
+  padding: 0 5px;
+}
+
+
+#block-kkblyd_pages-2 .main .wrapper p {
+  padding: 10px 5px;
 }
 
 #block-kkblyd_pages-2 .main div.papers {
