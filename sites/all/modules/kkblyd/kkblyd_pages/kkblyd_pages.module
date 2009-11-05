@@ -92,12 +92,14 @@ function kkblyd_pages_front_table() {
   drupal_add_js(drupal_get_path('module', 'kkblyd_pages') . '/form.js');
   if (date('H') > 11) {
     $date = date('Y-m-d');
+    $title_date = format_date(time(), 'custom', 'j. F Y', NULL, 'da');
   }
   else {
     $date = date('Y-m-d', time()-86400);
+    $title_date = format_date(time() - 86400, 'custom', 'j. F Y', NULL, 'da');
   }
   $output = '<div class="front-page-wrapper">';
-  $output .= theme('kkblud_pages_render_title_header', t("Today's sound news:"), t("Single articles"));
+  $output .= theme('kkblud_pages_render_title_header', t("Today's soundnews:"), $title_date);
   $output .= drupal_get_form('kkblud_pages_get_table_form', $date);
   $output .= '</div>';
   return $output;
@@ -520,10 +522,7 @@ function theme_kkblyd_pages_todays_block() {
   $title = t("Today's soundnews:");
   $markup = '<div clas="wrapper">';
   $markup .= "<h2 class=\"title\">$title<span class=\"marked\">$date</span></h2>";
-  if (TRUE) {
-    // Temporary to see if this is what's wanted.
-  }
-  else if ($count == 0) {
+  if ($count == 0) {
     $markup .= '<div class="download clear-block"><span class="no-link">' . t("No news today.") . '</span></div>';
   }
   else {
