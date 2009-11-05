@@ -91,7 +91,7 @@ div.title-wrapper {
 #kkblud-pages-get-table-form .text {
   font-weight: bold;
   float: left;
-  margin: 20px 50px 0 0;
+  margin: 20px 0 0 20px;
 }
 
 /** Table form of sound articles. **/
@@ -163,6 +163,7 @@ a span.text {
 #kkblud-pages-get-table-form table td div.wrapper {
   float: left;
   margin-left: 20px;
+  width: 640px;
 }
 
 #kkblud-pages-get-table-form table td .form-item{
