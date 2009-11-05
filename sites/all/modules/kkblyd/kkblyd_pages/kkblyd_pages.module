@@ -14,7 +14,7 @@
  * Implementation of hook_perm().
  */
 function kkblyd_pages_perm() {
-  return array('administer kkblyd blocks');
+  return array('administer kkblyd blocks', 'administer front header block with free HTML');
 }
 
 /**
@@ -448,25 +448,17 @@ function kkblyd_pages_block($op = 'list', $delta = 0, $edit = array()) {
       return $blocks;
 
     case 'configure':
-      if ($delta == 2 && user_access('administer kkblyd blocks')) {
+      if ($delta == 2 && user_access('administer front header block with free HTML')) {
         $form['kkblyd_pages_front'] = array(
           '#type' => 'fieldset',
           '#title' => t('Front page text'),
           '#collapsible' => TRUE,
         );
-        $form['kkblyd_pages_front']['main'] = array(
+        $form['kkblyd_pages_front']['content'] = array(
           '#type' => 'textarea',
-          '#title' => t('Main'),
-          '#description' => t('The text you enter here will appear in the middel region.'),
-          '#default_value' => variable_get('kkblyd_pages_front_main', ''),
-          '#cols' => 60,
-          '#rows' => 5,
-        );
-        $form['kkblyd_pages_front']['sidebar'] = array(
-          '#type' => 'textarea',
-          '#title' => t('Sidebar'),
-          '#description' => t('The text you enter here appears in the right sidebar region.'),
-          '#default_value' => variable_get('kkblyd_pages_front_sidebar', ''),
+          '#title' => t('Content'),
+          '#description' => t('The text you enter here will appear in the block'),
+          '#default_value' => variable_get('kkblyd_pages_front_content', ''),
           '#cols' => 60,
           '#rows' => 5,
         );
@@ -491,8 +483,7 @@ function kkblyd_pages_block($op = 'list', $delta = 0, $edit = array()) {
 
     case 'save':
       if ($delta == 2) {
-        variable_set('kkblyd_pages_front_main', $edit['main']);
-        variable_set('kkblyd_pages_front_sidebar', $edit['sidebar']);
+        variable_set('kkblyd_pages_front_content', $edit['content']);
       }
       else if ($delta == 3) {
         variable_set('kkblyd_pages_sound_paper', $edit['left']);
@@ -565,13 +556,7 @@ function theme_kkblyd_pages_area_block() {
 }
 
 function theme_kkblyd_pages_front_page_header_block() {
-  $main = filter_xss(variable_get('kkblyd_pages_front_main', ''), array('a', 'em', 'strong', 'cite', 'code', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'p', 'div', 'span'));
-  $sidebar = filter_xss(variable_get('kkblyd_pages_front_sidebar', ''), array('a', 'em', 'strong', 'cite', 'code', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'p', 'div', 'span'));
-  if (strlen($sidebar) == 0) {
-    $class = 'empty';
-  }
-  $markup = "$main</div><div class=\"right-sidebar $class\"><div class=\"r-wrapper\">$sidebar</div>";
-  return $markup;
+  return variable_get('kkblyd_pages_front_content', '');
 }
 
 function theme_kkblyd_pages_sounder_paper_header_block() {
