@@ -187,21 +187,23 @@ function kkblud_pages_get_table_form(&$form_state, $arg) {
   );
   $query = kkblyd_pages_table_query($arg);
   while ($row = db_fetch_array($query)) {
-    $node = new stdClass;
-    $node->nid = $row['nid'];
-    $node->vid = $row['vid'];
-    $form['article'][$row['nid']] = array(
-      '#type' => 'checkbox'
-    );
-    $file_data = unserialize($row['field_sound_article_data']);
-    $form['article_data']['#value'][$row['nid']] = array(
-      'terms' => taxonomy_node_get_terms($node),
-      'title' => $row['title'],
-      'duration' => preg_replace('/^0/', '', date('i:s', (int) $file_data['duration'])),
-      'size' => number_format($row['filesize'] / 1000000, 2, ',', '.') . ' MB',
-      'listen' => url($row['filepath'], array('absolute' => TRUE)),
-      'download' => url('playlist/' . $row['nid'], array('absolute' => TRUE)),
-    );
+    if (!isset($form['article'][$row['nid']])) {
+      $node = new stdClass;
+      $node->nid = $row['nid'];
+      $node->vid = $row['vid'];
+      $form['article'][$row['nid']] = array(
+        '#type' => 'checkbox'
+      );
+      $file_data = unserialize($row['field_sound_article_data']);
+      $form['article_data']['#value'][$row['nid']] = array(
+        'terms' => taxonomy_node_get_terms($node),
+        'title' => $row['title'],
+        'duration' => preg_replace('/^0/', '', date('i:s', (int) $file_data['duration'])),
+        'size' => number_format($row['filesize'] / 1000000, 2, ',', '.') . ' MB',
+        'listen' => url($row['filepath'], array('absolute' => TRUE)),
+        'download' => url('playlist/' . $row['nid'], array('absolute' => TRUE)),
+      );
+    }
   }
   $form['download'] = array(
     '#type' => 'submit',
@@ -303,7 +305,8 @@ function kkblyd_pages_make_playlist() {
                         JOIN {node} AS n ON n.nid = c.nid
                         WHERE c.field_publish_date_value = '$date'
                         AND n.status = 1
-                        AND n.promote = 1");
+                        AND n.promote = 1
+                        ORDER BY c.field_ordering_value");
   }
   else if ($arg == 'omraade') {
     $area = arg(2);
@@ -314,7 +317,10 @@ function kkblyd_pages_make_playlist() {
                           JOIN {node} AS n ON n.nid = c.nid
                           JOIN {term_data} AS td ON t.tid = td.tid
                           WHERE td.vid = 2
-                          AND n.status = 1");
+                          AND n.status = 1
+                          ORDER BY td.name
+                          AND c.field_publish_date_value
+                          AND c.field_ordering_value");
     }
     else {
       $term = taxonomy_get_term(arg(2));
@@ -325,8 +331,11 @@ function kkblyd_pages_make_playlist() {
                           JOIN {content_type_sound_article} AS c ON c.field_sound_article_fid = f.fid
                           JOIN {term_node} AS t ON t.nid = c.nid
                           JOIN {node} AS n ON n.nid = c.nid
+                          JOIN {term_data} AS td ON t.tid = td.tid
                           WHERE t.tid = %d
-                          AND n.status = 1", $term->tid);
+                          AND n.status = 1
+                          ORDER BY c.field_publish_date_value
+                          AND c.field_ordering_value", $term->tid);
     }
   }
   else {
@@ -339,7 +348,8 @@ function kkblyd_pages_make_playlist() {
                         JOIN {content_type_sound_article} AS c ON c.field_sound_article_fid = f.fid
                         JOIN {node} AS n ON n.nid = c.nid
                         WHERE c.nid IN %s
-                        AND n.status = 1", $lookup);
+                        AND n.status = 1
+                        ORDER BY c.field_ordering_value", $lookup);
   }
   $path = '';
   while ($row = db_result($result)) {
@@ -359,12 +369,15 @@ function kkblyd_pages_table_query($arg) {
   if (is_string($arg)) {
     if ($arg == 'alle') {
       return db_query("SELECT n.title, n.nid, n.vid, c.field_sound_article_data, f.filesize, f.filepath, f.fid FROM {node} AS n
-                         JOIN {content_type_sound_article} AS c ON c.nid = n.nid
-                         JOIN {files} AS f ON f.fid = c.field_sound_article_fid
-                         JOIN {term_node} AS t ON t.nid = n.nid
-                         JOIN {term_data} AS td ON t.tid = td.tid
-                         WHERE td.vid = 2
-                         AND n.status = 1;");
+                       JOIN {content_type_sound_article} AS c ON c.nid = n.nid
+                       JOIN {files} AS f ON f.fid = c.field_sound_article_fid
+                       JOIN {term_node} AS t ON t.nid = n.nid
+                       JOIN {term_data} AS td ON t.tid = td.tid
+                       WHERE td.vid = 2
+                       AND n.status = 1
+                       ORDER BY td.name
+                       AND c.field_publish_date_value
+                       AND c.field_ordering_value;");
     }
     $date = $arg;
     return db_query("SELECT n.title, n.nid, n.vid, c.field_sound_article_data, f.filesize, f.filepath, f.fid FROM {node} AS n
@@ -372,7 +385,8 @@ function kkblyd_pages_table_query($arg) {
                        JOIN {files} AS f ON f.fid = c.field_sound_article_fid
                        WHERE c.field_publish_date_value = '%s'
                        AND n.status = 1
-                       AND n.promote = 1;", $date . 'T00:00:00');
+                       AND n.promote = 1
+                       ORDER BY c.field_ordering_value;", $date . 'T00:00:00');
   }
   $lookup = array(NULL, NULL, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6);
   $week_day = date('N');
@@ -386,22 +400,28 @@ function kkblyd_pages_table_query($arg) {
   if (is_object($arg)) {
     $term = $arg;
     return db_query("SELECT n.title, n.nid, n.vid, c.field_sound_article_data, f.filesize, f.filepath, f.fid FROM {node} AS n
-                       JOIN {content_type_sound_article} AS c ON c.nid = n.nid
-                       JOIN {files} AS f ON f.fid = c.field_sound_article_fid
-                       JOIN {term_node} as t ON t.nid = n.nid
-                       WHERE t.tid = %d
-                       AND c.field_publish_date_value IN $week
-                       AND n.status = 1;", $term->tid);
+                     JOIN {content_type_sound_article} AS c ON c.nid = n.nid
+                     JOIN {files} AS f ON f.fid = c.field_sound_article_fid
+                     JOIN {term_node} as t ON t.nid = n.nid
+                     WHERE t.tid = %d
+                     AND c.field_publish_date_value IN $week
+                     AND n.status = 1
+                     ORDER BY c.field_publish_date_value
+                     AND c.field_ordering_value;", $term->tid);
   }
   else if (is_array($arg)) {
     $terms = '(' . join(',', $arg) . ')';
     return db_query("SELECT n.title, n.nid, n.vid, c.field_sound_article_data, f.filesize, f.filepath, f.fid FROM {node} AS n
-                       JOIN {content_type_sound_article} AS c ON c.nid = n.nid
-                       JOIN {files} AS f ON f.fid = c.field_sound_article_fid
-                       JOIN {term_node} as t ON t.nid = n.nid
-                       WHERE t.tid IN $terms
-                       AND c.field_publish_date_value IN $week
-                       AND n.status = 1;");
+                     JOIN {content_type_sound_article} AS c ON c.nid = n.nid
+                     JOIN {files} AS f ON f.fid = c.field_sound_article_fid
+                     JOIN {term_node} as t ON t.nid = n.nid
+                     JOIN {term_data} AS td ON t.tid = td.tid
+                     WHERE t.tid IN $terms
+                     AND c.field_publish_date_value IN $week
+                     AND n.status = 1
+                     ORDER BY td.name
+                     AND c.field_publish_date_value
+                     AND c.field_ordering_value;");
   }
 }
 
