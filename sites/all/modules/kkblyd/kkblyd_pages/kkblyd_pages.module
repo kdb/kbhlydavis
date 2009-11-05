@@ -349,9 +349,9 @@ function kkblyd_pages_table_query($arg) {
                          JOIN {content_type_sound_article} AS c ON c.nid = n.nid
                          JOIN {files} AS f ON f.fid = c.field_sound_article_fid
                          JOIN {term_node} AS t ON t.nid = n.nid
-                         WHERE t.vid = 2
-                         AND n.status = 1
-                         AND n.promote = 1;");
+                         JOIN {term_data} AS td ON t.tid = td.tid
+                         WHERE td.vid = 2
+                         AND n.status = 1;");
     }
     $date = $arg;
     return db_query("SELECT n.title, n.nid, n.vid, c.field_sound_article_data, f.filesize, f.filepath, f.fid FROM {node} AS n
