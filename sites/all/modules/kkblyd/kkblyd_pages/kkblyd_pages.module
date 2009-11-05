@@ -519,14 +519,23 @@ function kkblyd_pages_block($op = 'list', $delta = 0, $edit = array()) {
 function theme_kkblyd_pages_todays_block() {
   if (date('H') > 11) {
     $date = format_date(time(), 'custom', 'j. F Y', NULL, 'da');
+    $time = time();
   }
   else {
     $date = format_date(time() - 86400, 'custom', 'j. F Y', NULL, 'da');
+    $time = time() - 86400;
   }
+  $count = db_result(db_query("SELECT COUNT(field_sound_article_fid) FROM {content_type_sound_article} WHERE field_publish_date_value = '%s';", date('Y-m-d', $time) . 'T00:00:00'));
+
   $title = t("Today's soundnews:");
   $markup = '<div clas="wrapper">';
   $markup .= "<h2 class=\"title\">$title<span class=\"marked\">$date</span></h2>";
+  if ($count == 0) {
+    $markup .= '<div class="download clear-block"><span class="no-link">' . t("No news today.") . '</span></div>';
+  }
+  else {
   $markup .= '<div class="download clear-block">' . l('<span class="download"></span><span class="text">' . t("Download todays paper") . '</span>', 'playlist/idag', array('html' => TRUE)) . '</div>';
+  }
   $markup .= '</div>';
   return $markup;
 }

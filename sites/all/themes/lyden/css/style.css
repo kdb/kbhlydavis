@@ -662,3 +662,11 @@ div.profile {
   background-color: white;
   margin: 0;
 }
+
+
+/** todays news block **/
+#block-kkblyd_pages-0 span.no-link {
+  font-weight: bold;
+  margin-top: 20px;
+  float: left;
+}
