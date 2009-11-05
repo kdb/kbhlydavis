@@ -154,7 +154,7 @@ function kkblyd_pages_weekly_area_table($tid) {
   if ($tid == 'alle') {
     drupal_add_js(drupal_get_path('module', 'kkblyd_pages') . '/form.js');
     $output = '<div class="area-page-wrapper">';
-    $output .= theme('kkblud_pages_render_title_header', t('All of Copenhagen:'), t("Single articles"));
+    $output .= '<div class="title-wrapper"><div class="area clear-block"><h2 class="title area">' . t("The sound news from this week from all of Copenhagen") . '</h2><span class="area area-all"></span></div></div>';
     $output .= drupal_get_form('kkblud_pages_get_table_form', $tid);
     $output .= '</div>';
     return $output;
@@ -166,7 +166,7 @@ function kkblyd_pages_weekly_area_table($tid) {
   _kkblyd_pages_feed_head(t('The daily sound article from @area', array('@area' => $term->name)), url('podcast/' . $term->tid));
   drupal_add_js(drupal_get_path('module', 'kkblyd_pages') . '/form.js');
   $output = '<div class="area-page-wrapper">';
-  $output .= theme('kkblud_pages_render_title_header', $term->name . ':', t("Single articles"));
+  $output .= '<div class="title-wrapper"><div class="area clear-block"><h2 class="title area">' . t("The sound news from this week from @area:", array('@area' => $term->name)) . '</h2><span class="area area-' . $term->tid . '"></span></div></div>';
   $output .= drupal_get_form('kkblud_pages_get_table_form', $term);
   $output .= '</div>';
   return $output;
@@ -539,7 +539,7 @@ function theme_kkblyd_pages_area_block() {
     $term = 'alle';
   }
   if (is_string($term)) {
-    $title = t("the sound news from this week from all of Copenhagen");
+    $title = t("The sound news from this week from all of Copenhagen");
     $markup = '<div clas="wrapper"><div class="clear-block">';
     $markup .= "<h2 class=\"title\">$title</h2>" . '<span class="area-all"></span></div>';
     $markup .= '<div class="download clear-block">' . l('<span class="download"></span><span class="text">' . t("Download this week paper") . '</span>', 'playlist/omraade/alle', array('html' => TRUE)) . '</div>';
