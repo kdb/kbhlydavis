@@ -86,6 +86,13 @@ body {
   color: #003059;
 }
 
+#ft a:active,
+#ft a:hover,
+#ft a.active,
+#ft a {
+  color: white;
+}
+
 body.page-node #content {
   background-color: white;
   color: #003059;
