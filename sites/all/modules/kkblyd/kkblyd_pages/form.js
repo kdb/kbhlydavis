@@ -15,4 +15,7 @@ $(document).ready(function() {
   if (errorMessage.length) {
     errorMessage.click();
   }
+  $("#check-all").click(function() {
+    $("#kkblud-pages-get-table-form :checkbox").attr('checked', true);
+  });
 });

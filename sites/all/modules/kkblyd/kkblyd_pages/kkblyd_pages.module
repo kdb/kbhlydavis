@@ -249,14 +249,13 @@ function theme_kkblud_pages_get_table_form($form) {
         array('data' => drupal_render($form['article'][$nid]), 'class' => 'td-1'),
         array('data' => '<span class="paper ' . $class . '"></span>' . theme('kkblud_pages_table_render_article', $form['article_data']['#value'][$nid]), 'class' => 'td-2'),
         array('data' => l('<span class="listen"></span><span class="text">' . t('Listen') . '</span>', $form['article_data']['#value'][$nid]['listen'], array('attributes' => array('class' => 'listen clear-block'), 'html' => TRUE)), 'class' => 'td-3'),
-        array('data' => l('<span class="download"></span><span class="text">' . t('Download') . '</span>', $form['article_data']['#value'][$nid]['download'], array('attributes' => array('class' => 'download'), 'html' => TRUE)), 'class' => 'td-4')
       ),
       'class' => $class,
     );
   }
 
   $output .= theme('table', $header, $rows);
-  $output .= '<div class="form-wrapper clear-block"><div class="form-wrapper-wrapper"><span class="download"></span>';
+  $output .= '<div class="form-wrapper clear-block"><div class="form-wrapper-wrapper"><span id="check-all" class="text">' . t('Check all') . '</span><span class="download"></span>';
   $output .= drupal_render($form);
   $output .= '</div></div>';
   return $output;
@@ -521,11 +520,14 @@ function theme_kkblyd_pages_todays_block() {
   $title = t("Today's soundnews:");
   $markup = '<div clas="wrapper">';
   $markup .= "<h2 class=\"title\">$title<span class=\"marked\">$date</span></h2>";
-  if ($count == 0) {
+  if (TRUE) {
+    // Temporary to see if this is what's wanted.
+  }
+  else if ($count == 0) {
     $markup .= '<div class="download clear-block"><span class="no-link">' . t("No news today.") . '</span></div>';
   }
   else {
-  $markup .= '<div class="download clear-block">' . l('<span class="download"></span><span class="text">' . t("Download todays paper") . '</span>', 'playlist/idag', array('html' => TRUE)) . '</div>';
+    $markup .= '<div class="download clear-block">' . l('<span class="download"></span><span class="text">' . t("Download todays paper") . '</span>', 'playlist/idag', array('html' => TRUE)) . '</div>';
   }
   $markup .= '</div>';
   return $markup;
