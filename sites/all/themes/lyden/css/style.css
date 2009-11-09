@@ -435,7 +435,6 @@ a span.text {
 }
 
 #block-kkblyd_pages-2 .right-sidebar {
-  height: 325px;
   width: 240px;
   float: left;
   background-color: #CCD5DC;
@@ -450,8 +449,7 @@ a span.text {
 }
 
 #block-kkblyd_pages-2 .main .wrapper {
-  margin-top: 30px;
-  height: 295px;
+  margin: 30px 0 20px;
   width: 480px;
   background-color: white;
   float: left;
@@ -471,8 +469,8 @@ a span.text {
 }
 
 #block-kkblyd_pages-2 .main span.papers {
-  height: 245px;
-  width: 210px;
+  height: 128px;
+  width: 110px;
   background-image: url('../images/2d-sprite.png');
   background-position: -390px -300px;
   display: block;
