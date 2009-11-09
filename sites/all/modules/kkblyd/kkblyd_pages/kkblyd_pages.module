@@ -430,6 +430,12 @@ function kkblyd_pages_taxonomy_table($str_tids = '') {
   if ($terms['operator'] != 'and' && $terms['operator'] != 'or') {
     drupal_not_found();
   }
+  if ($terms['operator'] == 'and') {
+    $operator = ',';
+  }
+  else {
+    $operator = '+';
+  }
   if ($terms['tids']) {
     $result = db_query(db_rewrite_sql('SELECT t.tid, t.name FROM {term_data} t WHERE t.tid IN ('. db_placeholders($terms['tids']) .')', 't', 'tid'), $terms['tids']);
     $tids = array(); // we rebuild the $tids-array so it only contains terms the user has access to.
@@ -438,7 +444,7 @@ function kkblyd_pages_taxonomy_table($str_tids = '') {
       $tids[] = $term->tid;
       $names[] = $term->name;
     }
-    _kkblyd_pages_feed_head(t('The daily sound article from @terms', array('@terms' => join(', ', $names))), url('podcast/' . $term->tid));
+    _kkblyd_pages_feed_head(t('The daily sound article from @terms', array('@terms' => join(', ', $names))), url('podcast/' . join($operator, $tids)));
     drupal_set_title(t('Podcasts from: @terms', array('@terms' => join(', ', $names))));
   }
   else {
