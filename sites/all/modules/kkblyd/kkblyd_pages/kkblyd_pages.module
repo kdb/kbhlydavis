@@ -152,6 +152,7 @@ function kkblyd_pages_weekly_table() {
  */
 function kkblyd_pages_weekly_area_table($tid) {
   if ($tid == 'alle') {
+    _kkblyd_pages_feed_head(t('The daily sound article from all of copenhagen'), url('podcast/alle'));
     drupal_add_js(drupal_get_path('module', 'kkblyd_pages') . '/form.js');
     $output = '<div class="area-page-wrapper">';
     $output .= '<div class="title-wrapper"><div class="area clear-block"><h2 class="title area">' . t("The sound news from this week from all of Copenhagen") . '</h2><span class="area area-all"></span></div></div>';
