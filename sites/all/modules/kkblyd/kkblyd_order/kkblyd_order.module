@@ -21,9 +21,9 @@ function kkblyd_order_nodeapi(&$node, $op, $teaser = NULL, $page = NULL) {
   if ($node->type == 'catalog' && !$teaser && $page) {
     switch ($op) {
       case 'view':
-        $test = kkblyd_order_order_page();
+        $form = kkblyd_order_order_page();
         drupal_set_title($node->title);
-        $node->content = array('form' => array('#value' => $test));
+        $node->content['form'] = array('#value' => $form);
         break;
     }
   }
