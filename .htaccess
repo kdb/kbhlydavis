@@ -28,26 +28,6 @@ DirectoryIndex index.php
 # Override PHP settings. More in sites/default/settings.php
 # but the following cannot be changed at runtime.
 
-# PHP 4, Apache 1.
-<IfModule mod_php4.c>
-  php_value magic_quotes_gpc                0
-  php_value register_globals                0
-  php_value session.auto_start              0
-  php_value mbstring.http_input             pass
-  php_value mbstring.http_output            pass
-  php_value mbstring.encoding_translation   0
-</IfModule>
-
-# PHP 4, Apache 2.
-<IfModule sapi_apache2.c>
-  php_value magic_quotes_gpc                0
-  php_value register_globals                0
-  php_value session.auto_start              0
-  php_value mbstring.http_input             pass
-  php_value mbstring.http_output            pass
-  php_value mbstring.encoding_translation   0
-</IfModule>
-
 # PHP 5, Apache 1 and 2.
 <IfModule mod_php5.c>
   php_value magic_quotes_gpc                0
@@ -87,8 +67,11 @@ DirectoryIndex index.php
   # To redirect all users to access the site WITHOUT the 'www.' prefix,
   # (http://www.example.com/... will be redirected to http://example.com/...)
   # uncomment and adapt the following:
-  # RewriteCond %{HTTP_HOST} ^www\.example\.com$ [NC]
-  # RewriteRule ^(.*)$ http://example.com/$1 [L,R=301]
+  RewriteCond %{HTTP_HOST} ^www\.kbhlydavis\.dk [NC]
+  RewriteRule ^(.*)$ http://kbhlydavis.dk/$1 [L,R=301]
+
+  RewriteCond %{HTTP_HOST} ^(www\.)?kbh-lydavis\.dk [NC]
+  RewriteRule ^(.*)$ http://kbhlydavis.dk/$1 [L,R=301]
 
   # Modify the RewriteBase if you are using Drupal in a subdirectory or in a
   # VirtualDocumentRoot and the rewrite rules are not working properly.
