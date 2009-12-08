@@ -367,6 +367,12 @@ function kkblyd_pages_make_playlist() {
 }
 
 function kkblyd_pages_table_query($arg) {
+  $monday = date('Y-m-d', time()-($lookup[$week_day + 7]) * 86400) . 'T00:00:00';
+  $tuesday = date('Y-m-d', time()-($lookup[$week_day + 6]) * 86400) . 'T00:00:00';
+  $wednesday = date('Y-m-d', time()-($lookup[$week_day + 5]) * 86400) . 'T00:00:00';
+  $thirsday = date('Y-m-d', time()-($lookup[$week_day + 4]) * 86400) . 'T00:00:00';
+  $friday = date('Y-m-d', time()-($lookup[$week_day + 3]) * 86400) . 'T00:00:00';
+  $week = "('$monday','$tuesday','$wednesday','$thirsday','$friday')";
   if (is_string($arg)) {
     if ($arg == 'alle') {
       return db_query("SELECT n.title, n.nid, n.vid, c.field_sound_article_data, f.filesize, f.filepath, f.fid FROM {node} AS n
@@ -375,6 +381,7 @@ function kkblyd_pages_table_query($arg) {
                        JOIN {term_node} AS t ON t.nid = n.nid
                        JOIN {term_data} AS td ON t.tid = td.tid
                        WHERE td.vid = 2
+                       AND c.field_publish_date_value IN $week
                        AND n.status = 1
                        ORDER BY td.name
                        AND c.field_publish_date_value
@@ -392,12 +399,6 @@ function kkblyd_pages_table_query($arg) {
   $lookup = array(NULL, NULL, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6);
   $week_day = date('N');
 
-  $monday = date('Y-m-d', time()-($lookup[$week_day + 7]) * 86400) . 'T00:00:00';
-  $tuesday = date('Y-m-d', time()-($lookup[$week_day + 6]) * 86400) . 'T00:00:00';
-  $wednesday = date('Y-m-d', time()-($lookup[$week_day + 5]) * 86400) . 'T00:00:00';
-  $thirsday = date('Y-m-d', time()-($lookup[$week_day + 4]) * 86400) . 'T00:00:00';
-  $friday = date('Y-m-d', time()-($lookup[$week_day + 3]) * 86400) . 'T00:00:00';
-  $week = "('$monday','$tuesday','$wednesday','$thirsday','$friday')";
   if (is_object($arg)) {
     $term = $arg;
     return db_query("SELECT n.title, n.nid, n.vid, c.field_sound_article_data, f.filesize, f.filepath, f.fid FROM {node} AS n
