@@ -683,3 +683,28 @@ div.profile {
 .title-wrapper div.area {
   background-color: white;
 }
+
+/** week days links on dayly page **/
+div.item-list {
+  background-color: white;
+}
+
+ul.weekdays-link-list {
+  margin: 0;
+  clear: both;
+  padding: 20px 0 10px;
+  border-top: 10px solid #CCD5DC;
+}
+
+ul.weekdays-link-list li {
+  float: left;
+  list-style: none;
+}
+
+ul.weekdays-link-list li a {
+  text-decoration: none;
+  color: #003059;
+  font-weight: bold;
+  font-size: 20px;
+  margin-left: 20px;
+}

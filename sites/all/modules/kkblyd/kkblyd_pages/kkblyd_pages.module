@@ -117,9 +117,12 @@ function kkblyd_pages_lydavis() {
  */
 function kkblyd_pages_weekly_table() {
   $date = arg(1);
-  $choices = array('mandag', 'tirdag', 'onsdag', 'torsdag', 'fredag');
+  $choices = array('mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag');
   if (!in_array($date, $choices)) {
     if ($date == 'alle') {
+      return kkblyd_pages_weekly_area_table($date);
+    }
+    if ($date == 'daglig') {
       return kkblyd_pages_weekly_area_table($date);
     }
     if (preg_match('/[^0-9]/', $date)) {
@@ -157,6 +160,23 @@ function kkblyd_pages_weekly_area_table($tid) {
     $output = '<div class="area-page-wrapper">';
     $output .= '<div class="title-wrapper"><div class="area clear-block"><h2 class="title area">' . t("The sound news from this week from all of Copenhagen") . '</h2><span class="area area-all"></span></div></div>';
     $output .= drupal_get_form('kkblud_pages_get_table_form', $tid);
+    $output .= '</div>';
+    return $output;
+  }
+  if ($tid == 'daglig') {
+    _kkblyd_pages_feed_head(t('The daily sound article from all of copenhagen'), url('podcast/dagens'));
+    drupal_add_js(drupal_get_path('module', 'kkblyd_pages') . '/form.js');
+    $output = '<div class="area-page-wrapper">';
+    $output .= '<div class="title-wrapper"><div class="area clear-block"><h2 class="title area">' . t("Copenhagen's daily soundnews on the web") . '</h2><span class="area area-all"></span></div></div>';
+    $output .= drupal_get_form('kkblud_pages_get_table_form', $tid);
+    $links = array(
+      l(t('Monday'), 'lydavis/mandag'),
+      l(t('Tuesday'), 'lydavis/tirsdag'),
+      l(t('Wednesday'), 'lydavis/onsdag'),
+      l(t('Thursday'), 'lydavis/torsdag'),
+      l(t('Fridag'), 'lydavis/fredag')
+    );
+    $output .= theme('item_list', $links, Null, 'ul', array('class' => 'weekdays-link-list clear-block'));
     $output .= '</div>';
     return $output;
   }
@@ -375,6 +395,20 @@ function kkblyd_pages_table_query($arg) {
   $week = "('$monday','$tuesday','$wednesday','$thirsday','$friday')";
   if (is_string($arg)) {
     if ($arg == 'alle') {
+      return db_query("SELECT n.title, n.nid, n.vid, c.field_sound_article_data, f.filesize, f.filepath, f.fid FROM {node} AS n
+                       JOIN {content_type_sound_article} AS c ON c.nid = n.nid
+                       JOIN {files} AS f ON f.fid = c.field_sound_article_fid
+                       JOIN {term_node} AS t ON t.nid = n.nid
+                       JOIN {term_data} AS td ON t.tid = td.tid
+                       WHERE td.vid = 2
+                       AND c.field_publish_date_value IN $week
+                       AND n.status = 1
+                       AND n.promote = 1
+                       ORDER BY td.name
+                       AND c.field_publish_date_value
+                       AND c.field_ordering_value;");
+    }
+    if ($arg == 'daglig') {
       return db_query("SELECT n.title, n.nid, n.vid, c.field_sound_article_data, f.filesize, f.filepath, f.fid FROM {node} AS n
                        JOIN {content_type_sound_article} AS c ON c.nid = n.nid
                        JOIN {files} AS f ON f.fid = c.field_sound_article_fid
