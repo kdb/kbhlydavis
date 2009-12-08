@@ -9,6 +9,7 @@ engine = phptemplate
 stylesheets[all][]   = css/reset.css
 stylesheets[all][]   = css/fonts.css
 stylesheets[all][]   = css/style.css
+stylesheets[all][]   = css/rodovre.css
 stylesheets[screen][]   = css/layout.css
 ; scripts[] = script.js
 
