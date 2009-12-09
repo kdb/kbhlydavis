@@ -1,15 +1,5 @@
 <?php
 // $Id$
-
-/**
- * Implementation of hook_perm().
- */
-function kkblyd_admin_perm() {
-  return array('access special administration pages');
-}
-
-
-
 /**
  * Implementation of hook_nodeapi().
  */
@@ -75,40 +65,4 @@ function kkblyd_admin_form_sound_article_submit($form, &$form_state) {
     $form_state['redirect'] = 'node/add/sound-article';
   }
 }
-
-/**
- * Implementation of hook_menu().
- */
-function kkblyd_admin_menu() {
-  // Change access permissions to some of the top level admin pages.
-  $items['admin/user'] = array(
-    'title' => 'User management',
-    'description' => "Manage your site's users, groups and access to site features.",
-    'position' => 'left',
-    'page callback' => 'system_admin_menu_block_page',
-    'access arguments' => array('access special administration pages'),
-    'file' => 'system.admin.inc',
-    'file path' => drupal_get_path('module', 'system'),
-  );
-  $items['admin/build'] = array(
-    'title' => 'Site building',
-    'description' => 'Control how your site looks and feels.',
-    'position' => 'right',
-    'weight' => -10,
-    'page callback' => 'system_admin_menu_block_page',
-    'access arguments' => array('access special administration pages'),
-    'file' => 'system.admin.inc',
-  );
-  $items['admin/settings'] = array(
-    'title' => 'Site configuration',
-    'description' => 'Adjust basic site configuration options.',
-    'position' => 'right',
-    'weight' => -5,
-    'page callback' => 'system_settings_overview',
-    'access arguments' => array('access special administration pages'),
-    'file' => 'system.admin.inc',
-  );
-  return $items;
-}
-
 
