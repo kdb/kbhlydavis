@@ -634,7 +634,7 @@ function theme_kkblyd_pages_sounder_paper_header_block() {
   foreach ($terms as $tid => $name) {
     $links[] = array('data' => l('<span class="area-' . $tid . '"></span>' . $name, "lydavis/$tid", array("attributes" => array('class' => 'area-' . $tid), 'html' => TRUE)), 'class' => 'clear-block');
   }
-  $links[] = l('<span class="area-all"></span>' . t('All of Copenhagen'), 'lydavis/alle', array('html' => TRUE));
+  // $links[] = l('<span class="area-all"></span>' . t('All of Copenhagen'), 'lydavis/alle', array('html' => TRUE));
   $markup .= theme('item_list', $links);
   return $markup;
 }

@@ -606,7 +606,9 @@ a span.text {
 }
 
 #block-kkblyd_pages-3 li span.area-all,
-.title-wrapper span.area-all {
+.title-wrapper span.area-all,
+#block-kkblyd_pages-3 li span.area-29,
+.title-wrapper span.area-29 {
   background-position: -400px -185px;
 }
 
