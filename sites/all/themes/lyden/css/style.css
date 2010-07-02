@@ -202,6 +202,14 @@ a span.text {
   height: 60px;
 }
 
+#kkblud-pages-get-table-form td a.listen {
+  padding: 14px 0 0 70px;
+  background-image: url('../images/play.png');
+  background-repeat: no-repeat;
+  display: block;
+  height: 36px;
+}
+
 #kkblud-pages-get-table-form td span.listen {
   background-image: url('../images/2d-sprite.png');
   background-position: -457px -97px;
