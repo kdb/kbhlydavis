@@ -1,0 +1,119 @@
+body 
+{
+  text-align:center; 
+  margin: 0; 
+  padding: 0;  
+  font: 76%/170% Verdana, sans-serif;
+  color: #222;
+  background-image: url(bg.PNG);
+  background-repeat: repeat-x;
+  background-color: #e5e5e5;
+}
+a 
+{
+  text-decoration:none;
+  margin:0;
+  padding:0;
+  font-weight: bold;
+  color: #0c1c8c; 
+}
+a:hover
+{
+  text-decoration: underline;
+}
+h1, h2 
+{
+  font-size:156%;
+  font-weight: normal;
+}
+div#page-wrapper
+{
+  text-align:left;
+  margin-left:auto;
+  margin-right: auto;
+  width:957px;
+  padding:20px 0 0 0;
+  background-image: url(bgshort.PNG);
+  background-repeat: repeat-x;
+  background-color: #fff;
+}
+div#content
+{
+  margin: 0 10px 0 0;
+  width:700px;
+  clear:both;
+  float:left;
+  padding-right: 15px;
+  padding-left:15px;
+}
+div#sidebar-second
+{
+  width:205px;
+  float:left;
+  padding-left: 0px;
+  padding-right: 0px;
+  font-weight: bold;
+  line-height:120%;
+}
+div#footer
+{
+  padding-top: 15px;
+  padding-left: 15px;
+  padding-right: 15px;
+}  
+.view-lydia-channel-file-formatter .views-field-filesize,
+.view-lydia-channel-file-formatter .views-field-lydia-channel-playtime 
+{
+  text-align: right;
+}
+.views-table
+{
+  width: 100%;
+}
+a.feed-icon
+{
+  float: right;
+}
+.feed-icon
+{
+  padding: 10px 0 0 0;
+}
+
+thead th {
+  border-bottom: 2px solid #d6f0eb;
+}
+
+th a:link,
+th a:visited {
+  color: #6f9dbd;
+}
+
+td,
+th {
+  padding: .3em .5em;
+}
+
+tr.even,
+tr.odd,
+tbody th {
+  border: solid #d6f0eb;
+  border-width: 1px 0;
+}
+
+tr.odd,
+tr.info {
+  background-color: #f0f9f6;
+}
+
+tr.even {
+  background-color: #fff;
+}
+
+div#breadcrumb
+{
+  padding: 0 0 0 16px;  
+}
+div#sidebar-second li
+{
+  list-style-type : none;
+} 

@@ -1,0 +1,291 @@
+<?php
+/**
+ * @file
+ * Code for the Lydia Channel feature.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function lydia_channel_menu() {
+  return array(
+    'admin/lydia/upload' => array(
+      'title' => 'Bulk upload',
+      'description' => 'Bulk upload files to a Lydia channel.',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('lydia_channel_plupload_form'),
+      'access arguments' => array('upload files to lydia channel'),
+      'file' => 'lydia_channel.admin.inc',
+    ),
+    'lydia-channel/%file' => array(
+      'title' => 'Download audio',
+      'page callback' => 'lydia_channel_download_audio',
+      'page arguments' => array(1),
+      'access arguments' => array('access content'),
+      'file' => 'lydia_channel.pages.inc',
+    ),
+    'lydia-channel/%file/%nid' => array(
+      'title' => 'Download audio',
+      'page callback' => 'lydia_channel_download_audio',
+      'page arguments' => array(1,2),
+      'access arguments' => array('access content'),
+      'file' => 'lydia_channel.pages.inc',
+    ),
+    'lydia-channel/%node/playlist' => array(
+      'title' => 'Download playlist',
+      'page callback' => 'lydia_channel_download_playlist',
+      'page arguments' => array(1),
+      'access arguments' => array('access content'),
+      'file' => 'lydia_channel.pages.inc',
+    ),
+    'lydia-channel/%node/zip' => array(
+      'title' => 'Download zip',
+      'page callback' => 'lydia_channel_download_zip',
+      'page arguments' => array(1),
+      'access arguments' => array('access content'),
+      'file' => 'lydia_channel.pages.inc',
+    ),
+  );
+}
+
+
+/**
+ * Implements hook_permission().
+ */
+function lydia_channel_permission() {
+  return array(
+    'upload files to lydia channel' =>  array(
+      'title' => t('Upload files to lydia channel'),
+    ),
+    'bulk delete files to lydia channel' =>  array(
+      'title' => t('Bulk delete files to lydia channel'),
+      'restrict access' => TRUE,
+    ),
+  );
+}
+
+/**
+ * Implements hook_media_browser_params_alter().
+ */
+function lydia_channel_media_browser_params_alter(&$params) {
+  if (!empty($params['file_directory']) && $params['file_directory'] == 'lydia-channel') {
+    $params['types'] = array(
+      'audio' => 'audio',
+    );
+    // Will enable plupload, but doesn't work atm.
+    //$params['multiselect'] = TRUE;
+  }
+}
+
+/**
+ * Implements hook_file_presave().
+ */
+function lydia_channel_file_presave($file) {
+  // Set playtime on audio files.
+  if ($file->type == 'audio') {
+    $playtime = lydia_channel_get_playtime($file);
+    $file_wrapper = entity_metadata_wrapper('file', $file);
+    $file_wrapper->lydia_channel_playtime = $playtime;
+    if (!$file_wrapper->lydia_channel_filename->value()) {
+      $file_wrapper->lydia_channel_filename = $file->filename;
+    }
+  }
+}
+
+/**
+ * Implements hook_library_alter().
+ */
+function lydia_channel_library_alter(&$libraries, $module) {
+  // Tweak plupload max file size
+  if ($module == 'plupload' && isset($libraries['plupload'])) {
+    // Set default max file size upload to 100mb
+    if (!empty($libraries['plupload']['js'][0]['data']['plupload']['_default']['max_file_size']) && $libraries['plupload']['js'][0]['data']['plupload']['_default']['max_file_size'] == '10mb') {
+      $libraries['plupload']['js'][0]['data']['plupload']['_default']['max_file_size'] = '200mb';
+    }
+  }
+}
+
+/**
+ * Utility function.
+ * Get the playtime for an audio file using getid3.
+ */
+function lydia_channel_get_playtime($file) {
+  $getid3 = lydia_channel_load_getid3();
+  if ($getid3) {
+
+    $info = $getid3->analyze(drupal_realpath($file->uri));
+    if (!empty($info['playtime_seconds'])) {
+      return (int) $info['playtime_seconds'];
+    }
+  }
+  return 0;
+}
+
+/**
+ * Helper function to load the getid3 library.
+ */
+function lydia_channel_load_getid3() {
+  // Use static cache to lazy load the getid3.
+  static $getid3 = FALSE;
+  if (!empty($getid3)) {
+    return $getid3;
+  }
+  $path = libraries_get_path('getid3');
+  include_once($path . '/getid3/getid3.php');
+  if (class_exists('getID3')) {
+    $getid3 = new getID3;
+    $getid3->encoding         = 'UTF-8';
+    $getid3->encoding_id3v1   = 'ISO-8859-1';
+    $getid3->option_tags_html = FALSE;
+  }
+  return $getid3;
+}
+
+function lydia_channel_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'lydia_channel') . '/views',
+  );
+}
+
+/**
+ * Implements hook_views_data_alter().
+ */
+function lydia_channel_views_data_alter(&$data) {
+  // Add file type
+  $data['file_managed']['type'] = $data['file_usage']['type'];
+  $data['file_managed']['type']['title'] = t('Type');
+  $data['file_managed']['type']['help'] = t('The type of file (bundle)');
+  // Set the playtime as a unix data field.
+  $data['file_managed']['filename']['field']['handler'] = 'lydia_channel_views_handler_field_file';
+  // Fix Views bug.
+  $data['file_usage']['file_to_node']['relationship']['extra'] = array(array('field' => 'type', 'value' => 'node', 'table' => 'file_usage'));
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function lydia_channel_field_formatter_info() {
+  return array(
+    'lydia_channel_file' => array(
+      'label' => t('Audio file table'),
+      'field types' => array('file'),
+    ),
+    'lydia_channel_audio_duration' => array(
+      'label' => t('Audio file duration'),
+      'field types' => array('number_integer'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function lydia_channel_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+  $settings = $display['settings'];
+
+  switch ($display['type']) {
+    case 'lydia_channel_file':
+      if ($entity_type == 'node') {
+        $element[] = array(
+          array('#markup' => lydia_base_embed_view('lydia_channel_file_formatter', 'default', array($entity->nid))),
+        );
+        $element[] = array(
+          array('#markup' => '<div class="playlist">' . l(t('Download playlist'), 'lydia-channel/' . $entity->nid . '/playlist') . '</div>'),
+          array('#markup' => '<div class="zip">' . l(t('Download all'), 'lydia-channel/' . $entity->nid . '/zip') . '</div>'),
+        );
+      }
+      break;
+
+    case 'lydia_channel_audio_duration':
+      foreach ($items as $delta => $item) {
+        $value = (int) $item['value'];
+        $element[$delta] = array('#markup' => lydia_channel_playtime_as_time($value));
+      }
+      break;
+  }
+
+  return $element;
+}
+
+/**
+ * Utility function to format playtime as a human readable time.
+ */
+function lydia_channel_playtime_as_time($seconds) {
+  if ($seconds < 3600) {
+    $time = sprintf("%s:%02s", (int) ($seconds - $seconds % 60) / 60, $seconds % 60);
+  }
+  else {
+    $time = sprintf("%s:%02s:%02s", (int) ($seconds - $seconds % 3600) / 3600, ($seconds % 3600 - $seconds % 60) / 60, $seconds % 60);
+  }
+  return $time;
+}
+
+/**
+ * Implements hook_views_plugin().
+ */
+function lydia_channel_views_plugins() {
+  return array(
+    'module' => 'views', // This just tells our themes are elsewhere.
+    'row' => array(
+      'file_rss' => array(
+        'title' => t('File'),
+        'help' => t('Display the content for an audio file.'),
+        'handler' => 'lydia_channel_views_plugin_row_file_rss',
+        'path' => drupal_get_path('module', 'lydia_channel') . '/views', // not necessary for most modules
+        'theme' => 'views_view_row_rss',
+        'base' => array('file_managed'), // only works with 'lydia_channel' as base.
+        'uses options' => TRUE,
+        'type' => 'feed',
+        'help topic' => 'style-file-rss',
+      ),
+    ),
+    'style' => array(
+      'itunes_rss' => array(
+        'title' => t('Itunes RSS Feed'),
+        'help' => t('Generates an Itunes RSS feed from a view.'),
+        'handler' => 'lydia_channel_views_plugin_itunes_rss',
+        'theme' => 'views_view_rss',
+        'uses row plugin' => TRUE,
+        'uses options' => TRUE,
+        'type' => 'feed',
+        'help topic' => 'style-rss',
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_node_presave().
+ */
+function lydia_channel_node_presave($node) {
+  // Delete zip file whenever node is saved, since the contents might be changed.
+  if ($node->nid && $node->type == 'lydia_channel') {
+    $fid = db_select('file_usage', 'f')
+      ->fields('f', array('fid'))
+      ->condition('id', $node->nid)
+      ->condition('type', 'node')
+      ->condition('module', 'lydia_channel')
+      ->execute()
+      ->fetchField();
+    if ($fid) {
+      $file = file_load($fid);
+      if ($file) {
+        file_delete($file, TRUE);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function lydia_channel_form_lydia_channel_node_form_alter(&$form, &$form_state) {
+  if (empty($form['#node']->nid)) {
+    $form['menu']['enabled']['#default_value'] = 1;
+    $form['menu']['enabled']['#attached']['js'][] = drupal_get_path('module', 'lydia_channel') . '/lydia_channel.node_form.js';
+  }
+}
+
+include_once('lydia_channel.features.inc');

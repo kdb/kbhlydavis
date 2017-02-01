@@ -1,0 +1,9 @@
+base theme = garland
+
+name = Aidyl
+description = Garland subtheme for lydia project
+core = 7.x
+
+settings[garland_width] = fluid
+stylesheets[all][] = css/aidyl.css
+stylesheets[all][] = css/color.css

@@ -1,0 +1,378 @@
+
+/**
+ * Generic elements
+ */
+body {
+  color: #494949;
+  background: #eef8f6;
+}
+
+input {
+  color: #494949;
+}
+
+textarea,
+select {
+  color: #494949;
+}
+
+a:link,
+a:visited {
+  color: #0c1c8c;
+}
+
+a:hover {
+  color: #08156e;
+}
+
+a:active,
+a.active {
+  color: #666a8e;
+}
+
+hr {
+  background: #61b3a4;
+}
+
+ol.task-list li.done {
+  color: #329933;
+}
+
+thead th {
+  border-bottom: 2px solid #d6f0eb;
+  color: #494949;
+}
+
+th a:link,
+th a:visited {
+  color: #7b7e93;
+}
+
+tr.even,
+tr.odd,
+tbody th {
+  border: solid #d6f0eb;
+  border-width: 1px 0;
+}
+
+tr.odd,
+tr.info {
+  background-color: #eef8f6;
+}
+
+tr.even {
+  background-color: #ffffff;
+}
+
+tr.drag {
+  background-color: #fad8bf;
+}
+
+tr.drag-previous {
+  background-color: #fcebdf;
+}
+
+tr.odd td.active {
+  background-color: #dff2ee;
+}
+
+tr.even td.active {
+  background-color: #e8f5f2;
+}
+
+td.region-title,
+td.module,
+td.container,
+td.category {
+  border-top: 1.5em solid #ffffff;
+  border-bottom: 1px solid #b9eae2;
+  background-color: #d7efeb;
+  color: #454f67;
+}
+
+span.form-required {
+  color: #ffae00;
+}
+
+.submitted, .description,
+.vertical-tab-button .summary {
+  color: #898989;
+}
+
+.description {
+  color: #898989;
+}
+
+#skip-link a,
+#skip-link a:link,
+#skip-link a:visited {
+  background: #383838;
+  background: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+}
+
+/**
+ * Layout
+ */
+.region-header {
+  background: #d5efea url(bg-navigation.png) repeat-x 50% 100%;
+}
+
+#wrapper {
+  background: #eef8f6 url(body.png) repeat-x 50% 0;
+}
+
+.block-region {
+  border: 2px dashed #b9eae2;
+}
+
+/* Now we add the backgrounds for the main content shading */
+#wrapper #container #center #squeeze {
+  background: #ffffff url(bg-content.png) repeat-x 50% 0;
+}
+
+#wrapper #container #center .right-corner {
+  background: transparent url(bg-content-right.png) no-repeat 100% 0;
+}
+
+#wrapper #container #center .right-corner .left-corner {
+  background: transparent url(bg-content-left.png) no-repeat 0 0;
+}
+
+#branding,
+#branding a:link,
+#branding a:visited {
+  text-shadow: #201c7d 0px 1px 3px;
+}
+
+#wrapper #container .breadcrumb,
+#wrapper #container .breadcrumb a {
+  color: #585dad;
+}
+
+#highlighted {
+  background-color: #ffffff;
+  border: 1px solid #e2f3f8;
+}
+
+/**
+ * Overlay
+ */
+#overlay #overlay-tabs li a {
+  background: #dadceb;
+  color: #000000;
+}
+#overlay #overlay-tabs li a:hover,
+#overlay #overlay-tabs li a:focus {
+  background: #ffffff;
+}
+#overlay #overlay-tabs li.active a {
+  background: url(body.png) repeat-x scroll 50% -58px #edeef5;
+  color: #ffffff;
+}
+
+ul.main-menu li a,
+ul.main-menu li a:link,
+ul.main-menu li a:visited {
+  color: #ffffff;
+  background: transparent url(bg-navigation-item.png) no-repeat 50% 0;
+}
+
+ul.main-menu li a:hover,
+ul.main-menu li a.active {
+  color: #ffffff;
+  background: transparent url(bg-navigation-item-hover.png) no-repeat 50% 0;
+}
+
+ul.secondary-menu li a,
+ul.secondary-menu li a:link,
+ul.secondary-menu li a:visited {
+  color: #cfd2e4;
+}
+
+ul.secondary-menu li a:hover,
+ul.secondary-menu li a.active {
+  color: #cfd2e4;
+}
+
+#tabs-wrapper {
+  border-bottom: 1px solid #ebf1ef;
+}
+ul.secondary {
+  border-bottom: 1px solid #ebf1ef;
+}
+
+
+ul.primary li.active a,
+ul.primary li.active a:link,
+ul.primary li.active a:visited,
+ul.primary li a:hover,
+ul.secondary li.active a,
+ul.secondary li.active a:link,
+ul.secondary li.active a:visited,
+ul.secondary li a:hover {
+  background: url(bg-tab.png) repeat-x 0 50%;
+  color: #ffffff;
+}
+
+.new {
+  color: #ffae00;
+}
+
+.node-sticky {
+  background-color: #ffffff;
+  border: 1px solid #e2f3f8;
+}
+
+#comments {
+  border-bottom: 1px solid #ebf1ef;
+}
+
+#comments h2.comments {
+  background: #ffffff url(gradient-inner.png) repeat-x 0 0;
+}
+
+.comment {
+  border-top: 1px solid #ebf1ef;
+}
+
+.comment h3 a.active {
+  color: #494949;
+}
+
+#aggregator .feed-item {
+  border-bottom: 1px solid #ebf1ef;
+}
+#aggregator .feed-item-meta {
+  color: #898989;
+}
+
+/**
+ * Color.module
+ */
+#palette .form-item {
+  border: 1px solid #ffffff;
+}
+#palette .item-selected {
+  background: #ffffff url(gradient-inner.png) repeat-x 0 0;
+  border: 1px solid #dcf2ed;
+}
+
+/**
+ * Menu.module
+ */
+tr.odd td.menu-disabled {
+  background-color: #eef8f6;
+}
+tr.even td.menu-disabled {
+  background-color: #ffffff;
+}
+
+/**
+ * Poll.module
+ */
+.poll .bar {
+  background: #ffffff url(bg-bar-white.png) repeat-x 0 0;
+  border: solid #f0f0f0;
+}
+
+.poll .bar .foreground {
+  background: #7dc0b4 url(bg-bar.png) repeat-x 0 100%;
+}
+
+/**
+ * Collapsible fieldsets
+ */
+fieldset {
+  border: 1px solid #dcf2ed;
+  background: #ffffff url(gradient-inner.png) repeat-x 0 0;
+}
+
+.fieldset-legend span.summary {
+  color: #898989;
+}
+
+/**
+ * CSS support
+ */
+
+/*******************************************************************
+ *                                        *
+ *******************************************************************/
+
+/**
+ * Generic elements.
+ */
+.preview {
+  background-color: #fcfce8;
+  border: 1px solid #e5e58f;
+}
+
+.form-item input.error,
+.form-item textarea.error {
+  border: 1px solid #c52020;
+  color: #363636;
+}
+
+/**
+ * dblog.module
+ */
+tr.dblog-user {
+  background-color: #fcf9e5;
+}
+
+tr.dblog-user td.active {
+  background-color: #fbf5cf;
+}
+
+tr.dblog-content {
+  background-color: #fefefe;
+}
+
+tr.dblog-content td.active {
+  background-color: #f5f5f5;
+}
+
+tr.dblog-warning {
+  background-color: #fdf5e6;
+}
+
+tr.dblog-warning td.active {
+  background-color: #fdf2de;
+}
+
+tr.dblog-error {
+  background-color: #fbe4e4;
+}
+
+tr.dblog-error td.active {
+  background-color: #fbdbdb;
+}
+tr.dblog-page-not-found,
+tr.dblog-access-denied {
+  background: #d7ffd7;
+}
+tr.dblog-page-not-found td.active,
+tr.dblog-access-denied td.active {
+  background: #c7eec7;
+}
+
+/**
+ * Status report colors.
+ */
+table.system-status-report tr.error,
+table.system-status-report tr.error th {
+  background-color: #fcc;
+  border-color: #ebb;
+  color: #200;
+}
+table.system-status-report tr.warning,
+table.system-status-report tr.warning th {
+  background-color: #ffd;
+  border-color: #eeb;
+}
+table.system-status-report tr.ok,
+table.system-status-report tr.ok th {
+  background-color: #dfd;
+  border-color: #beb;
+}

@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function lydia_channel_install() {
+  // New module weights in core: put devel as the very last in the chain.
+  db_update('system')
+    ->fields(array(
+      'weight' => 1,
+    ))
+    ->condition('type', 'module')
+    ->condition('name', 'lydia_channel')
+    ->execute();
+}

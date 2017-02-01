@@ -1,0 +1,28 @@
+name = Lydia
+description = An audio newspaper destribution for Drupal.
+core = 7.x
+
+; Core
+dependencies[] = block
+dependencies[] = contextual
+dependencies[] = dblog
+dependencies[] = field_ui
+dependencies[] = file
+dependencies[] = image
+dependencies[] = list
+dependencies[] = menu
+dependencies[] = number
+dependencies[] = options
+dependencies[] = path
+dependencies[] = shortcut
+dependencies[] = toolbar
+
+; Contrib
+dependencies[] = features
+
+; Lydia
+dependencies[] = lydia_base
+dependencies[] = lydia_channel
+
+files[] = lydia.profile
+

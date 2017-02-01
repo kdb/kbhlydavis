@@ -1,0 +1,11 @@
+name = Lydias
+description = theme for Lydavis
+core = 7.x
+engine = phptemplate
+stylesheets[all][] = style.css
+region[header] = Header
+region[sidebar_first] = Left Sidebar
+region[sidebar_second] = Right Sidebar
+region[content] = Content
+region[footer] = Footer
+screenshot = screenshot.PNG

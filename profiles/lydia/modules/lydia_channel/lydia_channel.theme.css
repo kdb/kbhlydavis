@@ -1,0 +1,6 @@
+/**
+ * @file tweak style for upload page.
+ */
+.plupload_start {
+  display: none;
+}
