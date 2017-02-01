@@ -1,6 +1,4 @@
 # Remove contrib modules, themes and 3rd party libraries.
-modules/contrib
-themes/contrib
-libraries
+
 # Mac util files
 .DS_Store
