@@ -1,6 +1,0 @@
-; $Id$
-name = Kkblyd Pages
-description = "A module used to create custom pages sound articles, filtered by terms, and day"
-core = 6.x
-package = Københavns Lydavis
-

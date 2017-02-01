@@ -1,0 +1,8 @@
+core = "7.x"
+
+description = "Admin interface for the Lydia modules."
+name = "Lydia Base"
+package = "Lydia"
+php = "5.2.4"
+
+dependencies[] = "entity"
