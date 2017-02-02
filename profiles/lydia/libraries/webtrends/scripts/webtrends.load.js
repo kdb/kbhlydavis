@@ -23,6 +23,6 @@ window.webtrendsAsyncInit=function(){
         }).track();
 };
 (function(){
-    var s=document.createElement("script"); s.async=true; s.src="/scripts/webtrends.min.js";    
+    var s=document.createElement("script"); s.async=true; s.src="/profiles/lydia/libraries/webtrends/scripts/webtrends.min.js";
     var s2=document.getElementsByTagName("script")[0]; s2.parentNode.insertBefore(s,s2);
 }());
