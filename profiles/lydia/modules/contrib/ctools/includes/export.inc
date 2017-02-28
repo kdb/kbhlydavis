@@ -902,7 +902,8 @@ function ctools_export_object($table, $object, $indent = '', $identifier = NULL,
   $output = $indent . '$' . $identifier . ' = new ' . get_class($object) . "();\n";
 
   if ($schema['export']['can disable']) {
-    $output .= $indent . '$' . $identifier . '->disabled = FALSE; /* Edit this to true to make a default ' . $identifier . ' disabled initially */' . "\n";
+    $disabled = !isset($object->disabled) || $object->disabled != TRUE ? 'FALSE' : 'TRUE';
+    $output .= $indent . '$' . $identifier . '->disabled = ' . $disabled . '; /* Edit this to true to make a default ' . $identifier . ' disabled initially */' . "\n";
   }
   if (!empty($schema['export']['api']['current_version'])) {
     $output .= $indent . '$' . $identifier . '->api_version = ' . $schema['export']['api']['current_version'] . ";\n";
@@ -945,7 +946,13 @@ function ctools_export_object($table, $object, $indent = '', $identifier = NULL,
     else {
       $value = $object->$field;
       if ($info['type'] == 'int') {
-        $value = (isset($info['size']) && $info['size'] == 'tiny') ? (bool) $value : (int) $value;
+        if (isset($info['size']) && $info['size'] == 'tiny') {
+          $info['boolean'] = (!isset($info['boolean'])) ? $schema['export']['boolean'] : $info['boolean'];
+          $value = ($info['boolean']) ? (bool) $value : (int) $value;
+        }
+        else {
+          $value = (int) $value;
+        }
       }
 
       $output .= $indent . '$' . $identifier . '->' . $field . ' = ' . ctools_var_export($value, $indent) . ";\n";
@@ -967,7 +974,12 @@ function ctools_export_object($table, $object, $indent = '', $identifier = NULL,
  * that it's easily available.
  */
 function ctools_export_get_schema($table) {
-  $cache = &drupal_static(__FUNCTION__);
+  static $drupal_static_fast;
+  if (!isset($drupal_static_fast)) {
+    $drupal_static_fast['cache'] = &drupal_static(__FUNCTION__);
+  }
+  $cache = &$drupal_static_fast['cache'];
+
   if (empty($cache[$table])) {
     $schema = drupal_get_schema($table);
 
@@ -1003,6 +1015,7 @@ function ctools_export_get_schema($table) {
       'cache defaults' => FALSE,
       'default cache bin' => 'cache',
       'export type string' => 'type',
+      'boolean' => TRUE,
     );
 
     // If the export definition doesn't have the "primary key" then the CRUD
@@ -1215,7 +1228,7 @@ function ctools_export_default_to_hook_code($schema, $table, $names, $name) {
     $output .= "  \${$export['identifier']}s = array();\n\n";
     foreach ($objects as $object) {
       $output .= ctools_export_crud_export($table, $object, '  ');
-      $output .= "  \${$export['identifier']}s['" . check_plain($object->$export['key']) . "'] = \${$export['identifier']};\n\n";
+      $output .= "  \${$export['identifier']}s['" . check_plain($object->{$export['key']}) . "'] = \${$export['identifier']};\n\n";
     }
     $output .= "  return \${$export['identifier']}s;\n";
     $output .= "}\n";

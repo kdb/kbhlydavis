@@ -1,7 +1,23 @@
 (function($) {
 
 Drupal.plupload = Drupal.plupload || {};
-
+// Add Plupload events for autoupload and autosubmit.
+Drupal.plupload.filesAddedCallback = function (up, files) {
+  setTimeout(function(){up.start()}, 100);
+};
+Drupal.plupload.uploadCompleteCallback = function(up, files) {
+  var $this = $("#"+up.settings.container);
+  // If there is submit_element trigger it.
+  var submit_element = window.Drupal.settings.plupload[$this.attr('id')].submit_element;
+  if (submit_element) {
+    $(submit_element).click();
+  }
+  // Otherwise submit default form.
+  else {
+    var $form = $this.parents('form');
+      $($form[0]).submit();
+  }
+};
 /**
  * Attaches the Plupload behavior to each Plupload form element.
  */
@@ -17,90 +33,124 @@ Drupal.behaviors.plupload = {
       var elementSettings = (id && settings.plupload[id]) ? settings.plupload[id] : {};
       var pluploadSettings = $.extend({}, defaultSettings, elementSettings);
 
-      // Do additional requirements testing to prevent a less than ideal runtime
-      // from being used. For example, the Plupload library treats Firefox 3.5
-      // as supporting HTML 5, but this is incorrect, because Firefox 3.5
-      // doesn't support the 'multiple' attribute for file input controls. So,
-      // if settings.plupload._requirements.html5.mozilla = '1.9.2', then we
-      // remove 'html5' from pluploadSettings.runtimes if $.browser.mozilla is
-      // true and if $.browser.version is less than '1.9.2'.
-      if (settings.plupload['_requirements'] && pluploadSettings.runtimes) {
-        var runtimes = pluploadSettings.runtimes.split(',');
-        var filteredRuntimes = [];
-        for (var i = 0; i < runtimes.length; i++) {
-          var includeRuntime = true;
-          if (settings.plupload['_requirements'][runtimes[i]]) {
-            var requirements = settings.plupload['_requirements'][runtimes[i]];
-            for (var browser in requirements) {
-              if ($.browser[browser] && Drupal.plupload.compareVersions($.browser.version, requirements[browser]) < 0) {
-                includeRuntime = false;
-              }
-            }
+      // Process Plupload events.
+      if (elementSettings['init'] || false) {
+        if (!pluploadSettings.init) {
+          pluploadSettings.init = {};
+        }
+        for (var key in elementSettings['init']) {
+          var callback = elementSettings['init'][key].split('.');
+          var fn = window;
+          for (var j = 0; j < callback.length; j++) {
+            fn = fn[callback[j]];
           }
-          if (includeRuntime) {
-            filteredRuntimes.push(runtimes[i]);
+          if (typeof fn === 'function') {
+            pluploadSettings.init[key] = fn;
           }
         }
-        pluploadSettings.runtimes = filteredRuntimes.join(',');
       }
-
       // Initialize Plupload for this element.
       $this.pluploadQueue(pluploadSettings);
 
-      // Intercept the form submit to ensure all files are done uploading first.
-      var $form = $this.closest('form');
-      var originalFormAttributes = {
-        'method': $form.attr('method'),
-        'enctype': $form.attr('enctype'),
-        'action': $form.attr('action'),
-        'target': $form.attr('target')
-      };
-      $form.submit(function(e) {
-        var uploader = $('.plupload-element', this).pluploadQueue();
-
-        // Only allow the submit to proceed if there are files and they've all
-        // completed uploading.
-        // @todo Implement a setting for whether the field is required, rather
-        //   than assuming that all are.
-        if (uploader.files.length > 0 && uploader.total.uploaded == uploader.files.length) {
-          // Plupload's html4 runtime has a bug where it changes the attributes
-          // of the form to handle the file upload, but then fails to change
-          // them back after the upload is finished.
-          for (var attr in originalFormAttributes) {
-            $form.attr(attr, originalFormAttributes[attr]);
-          }
-          return;
-        }
-
-        // If we're here, stop the form submit, and perform logic as appropriate
-        // to the current upload state.
-        e.preventDefault();
-        if (uploader.files.length == 0) {
-          alert('You must at least upload one file.');
-        }
-        else if (uploader.state == plupload.STARTED) {
-          alert('Your files are currently being uploaded. Please wait until they are finished before submitting this form.');
-        }
-        else {
-          var stateChangedHandler = function() {
-            if (uploader.total.uploaded == uploader.files.length) {
-              // Plupload's html4 runtime has a bug where it changes the
-              // attributes of the form to handle the file upload, but then
-              // fails to change them back after the upload is finished.
-              for (var attr in originalFormAttributes) {
-                $form.attr(attr, originalFormAttributes[attr]);
-              }
-              uploader.unbind('StateChanged', stateChangedHandler);
-              $form.submit();
-            }
-          };
-          uploader.bind('StateChanged', stateChangedHandler);
-          uploader.start();
-        }
-      });
     });
   }
-}
+};
+
+ /**
+  * Attaches the Plupload behavior to each Plupload form element.
+  */
+Drupal.behaviors.pluploadform = {
+  attach: function(context, settings) {
+    $('form', context).once('plupload-form', function() {
+      if (0 < $(this).find('.plupload-element').length) {
+        var $form = $(this);
+        var originalFormAttributes = {
+            'method': $form.attr('method'),
+            'enctype': $form.attr('enctype'),
+            'action': $form.attr('action'),
+            'target': $form.attr('target')
+        };
+
+        $(this).submit(function(e) {
+          var completedPluploaders = 0;
+          var totalPluploaders = $(this).find('.plupload-element').length;
+          var errors = '';
+
+          $(this).find('.plupload-element').each( function(index){
+            var uploader = $(this).pluploadQueue();
+
+            var id = $(this).attr('id');
+            var defaultSettings = settings.plupload['_default'] ? settings.plupload['_default'] : {};
+            var elementSettings = (id && settings.plupload[id]) ? settings.plupload[id] : {};
+            var pluploadSettings = $.extend({}, defaultSettings, elementSettings);
+
+            //Only allow the submit to proceed if there are files and they've all
+            //completed uploading.
+            //TODO: Implement a setting for whether the field is required, rather
+            //than assuming that all are.
+            if (uploader.state == plupload.STARTED) {
+              errors += Drupal.t("Please wait while your files are being uploaded.");
+            }
+            else if (uploader.files.length == 0 && !pluploadSettings.required) {
+              completedPluploaders++;
+            }
+
+            else if (uploader.files.length == 0) {
+              errors += Drupal.t("@index: You must upload at least one file.\n",{'@index': (index + 1)});
+            }
+
+            else if (uploader.files.length > 0 && uploader.total.uploaded == uploader.files.length) {
+              completedPluploaders++;
+            }
+
+            else {
+              var stateChangedHandler = function() {
+                if (uploader.total.uploaded == uploader.files.length) {
+                  uploader.unbind('StateChanged', stateChangedHandler);
+                  completedPluploaders++;
+                  if (completedPluploaders == totalPluploaders ) {
+                    //Plupload's html4 runtime has a bug where it changes the
+                    //attributes of the form to handle the file upload, but then
+                    //fails to change them back after the upload is finished.
+                    for (var attr in originalFormAttributes) {
+                      $form.attr(attr, originalFormAttributes[attr]);
+                    }
+                    // Click a specific element if one is specified.
+                    if (settings.plupload[id].submit_element) {
+                      $(settings.plupload[id].submit_element).click();
+                    }
+                    else {
+                      $form.submit();
+                    }
+                    return true;
+                  }
+                }
+              };
+              uploader.bind('StateChanged', stateChangedHandler);
+              uploader.start();
+            }
+
+          });
+          if (completedPluploaders == totalPluploaders) {
+            //Plupload's html4 runtime has a bug where it changes the
+            //attributes of the form to handle the file upload, but then
+            //fails to change them back after the upload is finished.
+            for (var attr in originalFormAttributes) {
+              $form.attr(attr, originalFormAttributes[attr]);
+            }
+            return true;
+          }
+          else if (0 < errors.length){
+            alert(errors);
+          }
+
+          return false;
+        });
+      }
+    });
+  }
+};
+
 
 /**
  * Helper function to compare version strings.
