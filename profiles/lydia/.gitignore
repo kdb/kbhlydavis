@@ -1,0 +1,4 @@
+# Remove contrib modules, themes and 3rd party libraries.
+
+# Mac util files
+.DS_Store

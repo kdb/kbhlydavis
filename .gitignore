@@ -14,9 +14,11 @@
 .settings
 
 # Config and uploaded files
-/sites/default/settings.php
-/sites/default/files
 /files
+/sites/default/files
+/sites/default/settings.php
+/sites/kbhlydavis.dk
+/sites/sites.php
 
 # Drupal files we do not care to include.
 CHANGELOG.txt

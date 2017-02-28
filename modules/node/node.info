@@ -1,12 +1,16 @@
-; $Id: node.info,v 1.4 2007/06/08 05:50:55 dries Exp $
 name = Node
 description = Allows content to be submitted to the site and displayed on pages.
-package = Core - required
+package = Core
 version = VERSION
-core = 6.x
+core = 7.x
+files[] = node.module
+files[] = node.test
+required = TRUE
+configure = admin/structure/types
+stylesheets[all][] = node.css
 
-; Information added by Acquia.com packaging script
-version = "6.14"
+; Information added by drupal.org packaging script on 2013-08-08
+version = "7.23"
 project = "drupal"
-acquia = "1"
+datestamp = "1375928238"
 
