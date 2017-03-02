@@ -1,6 +1,0 @@
-; $Id$
-name = KBH lyd admin
-description = Tweaks and overrides for the admin interface.
-package = Københavns Lydavis
-core = 6.x
-

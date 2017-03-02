@@ -1,0 +1,32 @@
+/**
+ * Custom styles for Lydia.
+ */
+
+/**
+ * Styling for file table.
+ */
+.view-lydia-channel-file-formatter .views-field-filesize,
+.view-lydia-channel-file-formatter .views-field-lydia-channel-playtime {
+  text-align: right;
+}
+
+/**
+ * Generic styling.
+ */
+#block-system-main-menu h2 {
+  font-weight: bold;
+}
+
+#block-system-main-menu li a {
+  font-weight: bold;
+}
+
+h1,
+.view-lydia-channel-file-formatter a {
+  font-weight: bold;
+}
+
+#branding img {
+  margin-left: -1px;
+  margin-top: -9px;
+}
