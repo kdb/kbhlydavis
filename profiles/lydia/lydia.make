@@ -31,6 +31,9 @@ projects[plupload][version] = 1.0-beta3
 projects[strongarm][subdir] = contrib
 projects[strongarm][version] = 2.0
 
+projects[system_status][subdir] = contrib
+projects[system_status][version] = 3.2
+
 projects[token][subdir] = contrib
 projects[token][version] = 1.4
 
