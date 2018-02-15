@@ -1,0 +1,44 @@
+version: '2'
+services:
+  web:
+    image: 'reload/drupal-apache-fpm'
+    ports:
+      - 80
+    volumes_from:
+      - webroot
+    environment:
+      VIRTUAL_HOST: 'kbhlydavis.docker'
+
+  fpm:
+    image: 'reload/drupal-php7-fpm:5.6'
+    environment:
+      PHP_SENDMAIL_PATH: /usr/local/bin/mhsendmail --smtp-addr="mailhog:1025"
+    working_dir: /var/www/web
+    volumes_from:
+      - webroot
+    ports:
+      - 9000
+
+  db:
+    image: 'mysql:5.6'
+    ports:
+      - 3306
+    volumes:
+      - ./kbhlydavis.sql:/docker-entrypoint-initdb.d/kbhlydavis.sql
+    environment:
+      MYSQL_DATABASE: 'db'
+      MYSQL_USER: 'db'
+      MYSQL_PASSWORD: 'db'
+      MYSQL_ROOT_PASSWORD: 'db'
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - 8025
+
+  # Webroot container shared between the web and fpm container.
+  webroot:
+    image: tianon/true
+    volumes:
+      - './:/var/www/web:cached'
+      - './docker/settings.php:/var/www/web/sites/default/settings.php:cached'
