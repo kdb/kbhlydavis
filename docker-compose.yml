@@ -4,6 +4,8 @@ services:
     image: 'reload/drupal-apache-fpm'
     ports:
       - 80
+    links:
+      - fpm
     volumes_from:
       - webroot
     environment:
@@ -14,6 +16,8 @@ services:
     environment:
       PHP_SENDMAIL_PATH: /usr/local/bin/mhsendmail --smtp-addr="mailhog:1025"
     working_dir: /var/www/web
+    links:
+      - db
     volumes_from:
       - webroot
     ports:
