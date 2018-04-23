@@ -23,13 +23,16 @@ services:
     image: 'mysql:5.6'
     ports:
       - 3306
-    volumes:
-      - ./kbhlydavis.sql:/docker-entrypoint-initdb.d/kbhlydavis.sql
+    volumes_from:
+      - db-data
     environment:
       MYSQL_DATABASE: 'db'
       MYSQL_USER: 'db'
       MYSQL_PASSWORD: 'db'
       MYSQL_ROOT_PASSWORD: 'db'
+
+  db-data:
+    image: reload/db-data:kbhlydavis-latest
 
   mailhog:
     image: mailhog/mailhog
