@@ -4,6 +4,8 @@ services:
     image: 'reload/drupal-apache-fpm'
     ports:
       - 80
+    links:
+      - fpm
     volumes_from:
       - webroot
     environment:
@@ -14,6 +16,8 @@ services:
     environment:
       PHP_SENDMAIL_PATH: /usr/local/bin/mhsendmail --smtp-addr="mailhog:1025"
     working_dir: /var/www/web
+    links:
+      - db
     volumes_from:
       - webroot
     ports:
@@ -23,13 +27,16 @@ services:
     image: 'mysql:5.6'
     ports:
       - 3306
-    volumes:
-      - ./kbhlydavis.sql:/docker-entrypoint-initdb.d/kbhlydavis.sql
+    volumes_from:
+      - db-data
     environment:
       MYSQL_DATABASE: 'db'
       MYSQL_USER: 'db'
       MYSQL_PASSWORD: 'db'
       MYSQL_ROOT_PASSWORD: 'db'
+
+  db-data:
+    image: reload/db-data:kbhlydavis-latest
 
   mailhog:
     image: mailhog/mailhog
