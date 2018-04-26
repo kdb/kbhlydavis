@@ -4,10 +4,6 @@ patches:
     home: 'https://www.drupal.org/sa-core-2018-002'
     reason: 'SA-CORE-2018-002: Security fix against remote code execution. Part of Drupal 7.58.'
   -
-    patch: 'patch/SA-CORE-2018-004-0.patch'
-    home: 'https://www.drupal.org/sa-core-2018-004'
-    reason: 'SA-CORE-2018-004: Security fix against remote code execution. Part of Drupal 7.59.'
-  -
-    patch: 'https://cgit.drupalcode.org/drupal/rawdiff/?h=7.x&id=080daa38f265ea28444c540832509a48861587d0'
+    patch: 'patch/SA-CORE-2018-004.patch'
     home: 'https://www.drupal.org/sa-core-2018-004'
     reason: 'SA-CORE-2018-004: Security fix against remote code execution. Part of Drupal 7.59.'
