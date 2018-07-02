@@ -187,7 +187,8 @@ Drupal.viewsUi.addItemForm.prototype.handleCheck = function (event) {
   else {
     var length = this.checkedItems.length;
     var position = jQuery.inArray(label, this.checkedItems);
-    // Delete the item from the list and take sure that the list doesn't have undefined items left.
+    // Delete the item from the list and take sure that the list doesn't have
+    // undefined items left.
     for (var i = 0; i < this.checkedItems.length; i++) {
       if (i == position) {
         this.checkedItems.splice(i, 1);
@@ -209,7 +210,7 @@ Drupal.viewsUi.addItemForm.prototype.handleCheck = function (event) {
  */
 Drupal.viewsUi.addItemForm.prototype.refreshCheckedItems = function() {
   // Perhaps we should precache the text div, too.
-  this.$selected_div.find('.views-selected-options').html(this.checkedItems.join(', '));
+  this.$selected_div.find('.views-selected-options').html(Drupal.checkPlain(this.checkedItems.join(', ')));
   Drupal.viewsUi.resizeModal('', true);
 }
 
@@ -245,7 +246,7 @@ Drupal.behaviors.viewsUiRenderAddViewButton.attach = function (context, settings
   });
   $addDisplayDropdown.appendTo($menu);
 
-  // Add the click handler for the add display button
+  // Add the click handler for the add display button.
   $('li.add > a', $menu).bind('click', function (event) {
     event.preventDefault();
     var $trigger = $(this);
@@ -255,10 +256,11 @@ Drupal.behaviors.viewsUiRenderAddViewButton.attach = function (context, settings
   // away from the item. We use mouseleave instead of mouseout because
   // the user is going to trigger mouseout when she moves from the trigger
   // link to the sub menu items.
-  // We use the live binder because the open class on this item will be
+  //
+  // We use the 'li.add' selector because the open class on this item will be
   // toggled on and off and we want the handler to take effect in the cases
   // that the class is present, but not when it isn't.
-  $('li.add', $menu).live('mouseleave', function (event) {
+  $menu.delegate('li.add', 'mouseleave', function (event) {
     var $this = $(this);
     var $trigger = $this.children('a[href="#"]');
     if ($this.children('.action-list').is(':visible')) {
@@ -351,7 +353,7 @@ Drupal.viewsUi.OptionsSearch.prototype.handleKeyup = function (event) {
 
   // Determine the user's search query. The search text has been converted to
   // lowercase.
-  search = this.$searchBox.val().toLowerCase();
+  search = (this.$searchBox.val() || '').toLowerCase();
   words = search.split(' ');
   wordsLength = words.length;
 
@@ -667,7 +669,7 @@ Drupal.viewsUi.rearrangeFilterHandler.prototype.modifyTableDrag = function () {
 
     // Make sure the "group" dropdown is properly updated when rows are dragged
     // into an empty filter group. This is borrowed heavily from the block.js
-    // implementation of tableDrag.onDrop().
+    // Implements tableDrag.onDrop().
     var groupRow = $(this.rowObject.element).prevAll('tr.group-message').get(0);
     var groupName = groupRow.className.replace(/([^ ]+[ ]+)*group-([^ ]+)-message([ ]+[^ ]+)*/, '$2');
     var groupField = $('select.views-group-select', this.rowObject.element);
@@ -768,14 +770,14 @@ Drupal.behaviors.viewsFilterConfigSelectAll.attach = function(context) {
   $('#views-ui-config-item-form div.form-item-options-value-all', context).once(function() {
     $(this).show();
   })
-  .find('input[type=checkbox]')
-  .click(function() {
-    var checked = $(this).is(':checked');
-    // Update all checkbox beside the select all checkbox.
-    $(this).parents('.form-checkboxes').find('input[type=checkbox]').each(function() {
-      $(this).attr('checked', checked);
+    .find('input[type=checkbox]')
+    .click(function() {
+      var checked = $(this).is(':checked');
+      // Update all checkbox beside the select all checkbox.
+      $(this).parents('.form-checkboxes').find('input[type=checkbox]').each(function() {
+        $(this).attr('checked', checked);
+      });
     });
-  });
   // Uncheck the select all checkbox if any of the others are unchecked.
   $('#views-ui-config-item-form div.form-type-checkbox').not($('.form-item-options-value-all')).find('input[type=checkbox]').each(function() {
     $(this).click(function() {
@@ -925,7 +927,7 @@ Drupal.behaviors.viewsUiOverrideSelect.attach = function (context, settings) {
         $submit.val(Drupal.t('Apply (this display)'));
       }
     })
-    .trigger('change');
+      .trigger('change');
   });
 
 };
@@ -934,13 +936,14 @@ Drupal.viewsUi.resizeModal = function (e, no_shrink) {
   var $ = jQuery;
   var $modal = $('.views-ui-dialog');
   var $scroll = $('.scroll', $modal);
-  if ($modal.size() == 0 || $modal.css('display') == 'none') {
+  if ($modal.length == 0 || $modal.css('display') == 'none') {
     return;
   }
 
-  var maxWidth = parseInt($(window).width() * .85); // 70% of window
-  var minWidth = parseInt($(window).width() * .6); // 70% of window
-
+  var maxWidth = parseInt($(window).width() * .85);
+  // 70% of window.
+  var minWidth = parseInt($(window).width() * .6);
+  // 70% of window.
   // Set the modal to the minwidth so that our width calculation of
   // children works.
   $modal.css('width', minWidth);
@@ -975,7 +978,6 @@ Drupal.viewsUi.resizeModal = function (e, no_shrink) {
 
   // Now, calculate what the difference between the scroll and the modal
   // will be.
-
   var difference = 0;
   difference += parseInt($scroll.css('padding-top'));
   difference += parseInt($scroll.css('padding-bottom'));
@@ -1000,7 +1002,7 @@ Drupal.viewsUi.resizeModal = function (e, no_shrink) {
     width = maxWidth;
   }
 
-  // Get where we should move content to
+  // Get where we should move content to.
   var top = ($(window).height() / 2) - (height / 2);
   var left = ($(window).width() / 2) - (width / 2);
 
