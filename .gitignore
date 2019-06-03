@@ -1,6 +1,9 @@
-<<<<<<< HEAD
-# SVN dirs
-.svn
+# Ignore configuration files that may contain sensitive information.
+sites/*/settings*.php
+
+# Ignore paths that contain user-generated content.
+sites/*/files
+sites/*/private
 
 # Mac OS X cruft
 .DS_Store
@@ -15,50 +18,5 @@
 .settings
 
 # Config and uploaded files
-/files
-/sites/default/files
-/sites/default/settings.php
 /sites/kbhlydavis.dk
 /sites/sites.php
-
-# Drupal files we do not care to include.
-CHANGELOG.txt
-INSTALL.mysql.txt
-INSTALL.pgsql.txt
-INSTALL.txt
-COPYRIGHT.txt
-MAINTAINERS.txt
-UPGRADE.txt
-/themes/bluemarine
-/themes/chameleon
-/themes/pushbutton
-
-# Acquia Drupal files we do not want.
-/modules/acquia/jquery_ui/jquery.ui/jquery-1.2.6.js
-/modules/acquia/jquery_ui/jquery.ui/demos
-/modules/acquia/jquery_ui/jquery.ui/tests
-/modules/acquia/image
-/modules/acquia/img_assist
-
-# Copies of the GPL license.
-LICENSE.txt
-
-# Drush backups
-/backup
-
-# Modules used locally
-/sites/all/modules/local
-
-# CVS folders
-CVS
-
-# The devel and coder modules for local development.
-sites/all/modules/contrib/devel
-sites/all/modules/contrib/coder
-
-# Ignore configuration files that may contain sensitive information.
-sites/*/settings*.php
-
-# Ignore paths that contain user-generated content.
-sites/*/files
-sites/*/private
