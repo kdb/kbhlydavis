@@ -1,0 +1,4 @@
+name = Lydia Cleanup
+description = Cleans up old files.
+core = 7.x
+

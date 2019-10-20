@@ -294,3 +294,10 @@ function lydia_base_get_ga_category($nid) {
 function lydia_base_update_7001() {
   module_enable(array('system_status'));
 }
+
+/**
+ * Enable the elysia_cron and lydia_cleanup module.
+ */
+function lydia_base_update_7002() {
+  module_enable(array('elysia_cron', 'lydia_cleanup'));
+}
