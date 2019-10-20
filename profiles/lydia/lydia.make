@@ -9,6 +9,9 @@ projects[backup_migrate][version] = 2.4
 projects[ctools][subdir] = contrib
 projects[ctools][version] = 1.2
 
+projects[elysia_cron][subdir] = contrib
+projects[elysia_cron][version] = 2.7
+
 projects[entity][subdir] = contrib
 projects[entity][version] = 1.0-rc3
 

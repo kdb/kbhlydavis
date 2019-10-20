@@ -1,0 +1,108 @@
+<?php
+
+/**
+ * @file
+ * Code for the Lydia Cleanup feature.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function lydia_cleanup_menu() {
+  return array(
+    'admin/lydia/clean' => array(
+      'title' => 'Clean up files',
+      'description' => 'Clean up unused files.',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('lydia_cleanup_form'),
+      'access arguments' => array('delete files from server'),
+      'file' => 'lydia_cleanup.admin.inc',
+    ),
+  );
+}
+
+/**
+ * Implements hook_permission().
+ */
+function lydia_cleanup_permission() {
+  return array(
+    'delete files from server' => array(
+      'title' => t('Delete unused uploaded files from server'),
+      'restrict access' => TRUE,
+    ),
+  );
+}
+
+/**
+ * Run cleanup.
+ */
+function lydia_cleanup_run() {
+  $audio_path = drupal_realpath('public://lydia-channel');
+  $zip_path = drupal_realpath('public://lydia-channel-zip');
+
+  if (variable_get('lydia_cleanup_zip_files', FALSE)) {
+    $files = file_scan_directory($zip_path, '/.*\.zip$/');
+    _lydia_cleanup($files);
+  }
+
+  if (variable_get('lydia_cleanup_audio_files', FALSE)) {
+    $files = file_scan_directory($audio_path, '/.*\.mp3$/');
+    _lydia_cleanup($files);
+  }
+}
+
+function _lydia_cleanup($files) {
+  // Loop through all of the local files.
+  foreach ($files as $file) {
+    $file_modified = new DateTime();
+    $file_modified = $file_modified->setTimestamp(filemtime($file->uri));
+    $now = new DateTime();
+    $days_old = date_diff($now, $file_modified)->days;
+    $file_is_too_old = $days_old > variable_get('lydia_cleanup_days', '14');
+    $replacements = array('@days' => "$days_old old", '@filepath' => $file->uri);
+
+    // The file is older than the set limit of days.
+    if ($file_is_too_old) {
+      $node_exists = FALSE;
+      // Check if the file exists in file_managed and the node exists.
+      $fid = db_query("SELECT fid FROM {file_managed} WHERE uri = :uri", array(':uri' => 'public://lydia-channel/' . $file->filename))->fetchField();
+      $nid = db_query("SELECT id FROM {file_usage} WHERE fid = :fid", array(':fid' => $fid))->fetchField();
+      if ($nid) {
+        $node_exists = TRUE;
+      }
+      // If it exists in file_managed, try to delete it and cleanup.
+      if ($fid && !$node_exists) {
+        $loaded_file = file_load($fid);
+        $was_deleted = file_delete($loaded_file);
+        if ($was_deleted) {
+          // The file was found and deleted gracefully.
+          watchdog('lydia_cleanup', t('Deleted managed file @filepath because it was @days old'), $replacements, WATCHDOG_INFO);
+        }
+        else {
+          // The file was not deleted.
+          watchdog('lydia_cleanup', t('Failed to delete managed file @filepath because it was @days old'), $replacements, WATCHDOG_ERROR);
+        }
+      }
+      // The file is unmanaged and old, delete it.
+      if (!$node_exists) {
+        file_unmanaged_delete($file->uri);
+        watchdog('lydia_cleanup', t('Deleted unmanaged file @filepath because it was @days old'), $replacements, WATCHDOG_INFO);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_cronapi().
+ */
+function lydia_cleanup_cronapi($op, $job = NULL) {
+
+  $items['lydia_cleanup_cron'] = array(
+    'description' => 'Clean up old files',
+    // Every monday at 2 am.
+    'rule' => '0 2 * * 1',
+    'callback' => 'lydia_cleanup_run',
+  );
+
+  return $items;
+}
