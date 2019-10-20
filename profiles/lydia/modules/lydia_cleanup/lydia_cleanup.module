@@ -43,11 +43,15 @@ function lydia_cleanup_run() {
   if (variable_get('lydia_cleanup_zip_files', FALSE)) {
     $files = file_scan_directory($zip_path, '/.*\.zip$/');
     _lydia_cleanup($files);
+    $temp_files = file_scan_directory($zip_path, '/.*\.zip.*$/');
+    _lydia_cleanup($temp_files);
   }
 
   if (variable_get('lydia_cleanup_audio_files', FALSE)) {
     $files = file_scan_directory($audio_path, '/.*\.mp3$/');
     _lydia_cleanup($files);
+    $temp_files = file_scan_directory($audio_path, '/.*\.mp3.*$/');
+    _lydia_cleanup($temp_files);
   }
 }
 
