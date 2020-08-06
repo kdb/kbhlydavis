@@ -13,5 +13,5 @@ to the public.
 2. Change directory into the project folder
 3. Put database dump into the folder as `kbhlydavis.sql`
 4. `docker-compose up`
-5. Go to [kbhlydavis.docker](http://kbhlydavis.docker)
+5. Go to [kbhlydavis.docker](http://kbhlydavis.docker) (With the default setup I need to go to http://kbhlydavis.docker:DOCKER_EXPOSES_PORT - Carsten)
 6. Login with `docker-compose run --rm --no-deps drush uli --uri=kbhlydavis.docker`
