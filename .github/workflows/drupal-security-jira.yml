@@ -17,7 +17,7 @@ jobs:
       - name: "Sync JIRA security issues from Drupal security updates"
         uses: reload/drupal-security-jira@main
         env:
-          DRUPAL_HOST: kbhlydavis.dk
+          DRUPAL_HOST: http://kbhlydavis.dk
           SYSTEM_STATUS_TOKEN: ${{ secrets.SystemStatusToken }}
           SYSTEM_STATUS_KEY: ${{ secrets.SystemStatusKey }}
           JIRA_TOKEN: ${{ secrets.JiraApiToken }}
