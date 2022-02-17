@@ -1,0 +1,29 @@
+name: Drupal Security Alerts for Jira
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Dry run
+        required: true
+        default: "1"
+  schedule:
+     - cron: "0 */6 * * *"
+
+jobs:
+  syncDrupalSecurityUpdates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Sync JIRA security issues from Drupal security updates"
+        uses: reload/drupal-security-jira@main
+        env:
+          DRUPAL_HOST: kbhlydavis.dk
+          SYSTEM_STATUS_TOKEN: ${{ secrets.SystemStatusToken }}
+          SYSTEM_STATUS_KEY: ${{ secrets.SystemStatusKey }}
+          JIRA_TOKEN: ${{ secrets.JiraApiToken }}
+          JIRA_HOST: https://reload.atlassian.net
+          JIRA_USER: security+jira@reload.dk
+          JIRA_PROJECT: KL
+          JIRA_ISSUE_TYPE: Security
+          JIRA_WATCHERS: an1v@kk.dk
+          DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}

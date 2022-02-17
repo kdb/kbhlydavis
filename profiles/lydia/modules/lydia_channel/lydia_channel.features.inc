@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * lydia_channel.features.inc
@@ -7,8 +8,7 @@
 /**
  * Implements hook_ctools_plugin_api().
  */
-function lydia_channel_ctools_plugin_api() {
-  list($module, $api) = func_get_args();
+function lydia_channel_ctools_plugin_api($module = NULL, $api = NULL) {
   if ($module == "strongarm" && $api == "strongarm") {
     return array("version" => "1");
   }
@@ -28,5 +28,6 @@ function lydia_channel_node_info() {
       'help' => '',
     ),
   );
+  drupal_alter('node_info', $items);
   return $items;
 }
