@@ -25,5 +25,5 @@ jobs:
           JIRA_USER: security+jira@reload.dk
           JIRA_PROJECT: KL
           JIRA_ISSUE_TYPE: Security
-          JIRA_WATCHERS: an1v@kk.dk
+          JIRA_WATCHERS: l15g@kk.dk
           DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
